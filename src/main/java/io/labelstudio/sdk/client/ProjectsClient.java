@@ -27,22 +27,47 @@ public class ProjectsClient {
     }
     
     /**
+     * Gets the exports client for a specific project.
+     * 
+     * @param projectId the project ID
+     * @return the project exports client
+     */
+    public ProjectExportsClient exports(int projectId) {
+        return new ProjectExportsClient(httpClient, projectId);
+    }
+    
+    /**
      * Lists all projects.
      * 
      * @return a paginated list of projects
      */
     public Pagination<Project> list() {
-        return list(null);
+        return list(null, null);
+    }
+    
+    /**
+     * Lists projects with list options.
+     * 
+     * @param listOptions the list options for filtering, sorting, and pagination
+     * @return a paginated list of projects
+     */
+    public Pagination<Project> list(ProjectsListOptions listOptions) {
+        return list(listOptions, null);
     }
     
     /**
      * Lists projects with options.
      * 
-     * @param options request options
+     * @param listOptions the list options for filtering, sorting, and pagination
+     * @param requestOptions request options
      * @return a paginated list of projects
      */
-    public Pagination<Project> list(RequestOptions options) {
-        return httpClient.get("/api/projects/", 
+    public Pagination<Project> list(ProjectsListOptions listOptions, RequestOptions requestOptions) {
+        String path = "/api/projects/";
+        if (listOptions != null) {
+            path += buildQueryString(listOptions);
+        }
+        return httpClient.get(path, 
                 httpClient.getObjectMapper().getTypeFactory()
                         .constructParametricType(Pagination.class, Project.class));
     }
@@ -53,17 +78,32 @@ public class ProjectsClient {
      * @return a CompletableFuture containing a paginated list of projects
      */
     public CompletableFuture<Pagination<Project>> listAsync() {
-        return listAsync(null);
+        return listAsync(null, null);
+    }
+    
+    /**
+     * Lists projects with list options asynchronously.
+     * 
+     * @param listOptions the list options for filtering, sorting, and pagination
+     * @return a CompletableFuture containing a paginated list of projects
+     */
+    public CompletableFuture<Pagination<Project>> listAsync(ProjectsListOptions listOptions) {
+        return listAsync(listOptions, null);
     }
     
     /**
      * Lists projects with options asynchronously.
      * 
-     * @param options request options
+     * @param listOptions the list options for filtering, sorting, and pagination
+     * @param requestOptions request options
      * @return a CompletableFuture containing a paginated list of projects
      */
-    public CompletableFuture<Pagination<Project>> listAsync(RequestOptions options) {
-        return httpClient.getAsync("/api/projects/", 
+    public CompletableFuture<Pagination<Project>> listAsync(ProjectsListOptions listOptions, RequestOptions requestOptions) {
+        String path = "/api/projects/";
+        if (listOptions != null) {
+            path += buildQueryString(listOptions);
+        }
+        return httpClient.getAsync(path, 
                 httpClient.getObjectMapper().getTypeFactory()
                         .constructParametricType(Pagination.class, Project.class));
     }
@@ -332,5 +372,199 @@ public class ProjectsClient {
      */
     public CompletableFuture<TaskImportResult> importTasksAsync(int id, List<Map<String, Object>> tasks, RequestOptions options) {
         return httpClient.postAsync("/api/projects/" + id + "/import/", tasks, TaskImportResult.class);
+    }
+    
+    /**
+     * Gets project counts with filtering options.
+     * 
+     * @return a paginated list of project counts
+     */
+    public Pagination<ProjectCounts> listCounts() {
+        return listCounts(null, null);
+    }
+    
+    /**
+     * Gets project counts with filtering options.
+     * 
+     * @param listOptions the list options for filtering
+     * @return a paginated list of project counts
+     */
+    public Pagination<ProjectCounts> listCounts(ProjectsListOptions listOptions) {
+        return listCounts(listOptions, null);
+    }
+    
+    /**
+     * Gets project counts with filtering options.
+     * 
+     * @param listOptions the list options for filtering
+     * @param requestOptions request options
+     * @return a paginated list of project counts
+     */
+    public Pagination<ProjectCounts> listCounts(ProjectsListOptions listOptions, RequestOptions requestOptions) {
+        String path = "/api/projects/counts/";
+        if (listOptions != null) {
+            path += buildQueryString(listOptions);
+        }
+        return httpClient.get(path, 
+                httpClient.getObjectMapper().getTypeFactory()
+                        .constructParametricType(Pagination.class, ProjectCounts.class));
+    }
+    
+    /**
+     * Duplicates a project.
+     * 
+     * @param id the project ID to duplicate
+     * @param request the duplication request
+     * @return the duplicated project
+     */
+    public Project duplicate(int id, ProjectDuplicateRequest request) {
+        return duplicate(id, request, null);
+    }
+    
+    /**
+     * Duplicates a project with options.
+     * 
+     * @param id the project ID to duplicate
+     * @param request the duplication request
+     * @param options request options
+     * @return the duplicated project
+     */
+    public Project duplicate(int id, ProjectDuplicateRequest request, RequestOptions options) {
+        return httpClient.post("/api/projects/" + id + "/duplicate/", request, Project.class);
+    }
+    
+    /**
+     * Duplicates a project asynchronously.
+     * 
+     * @param id the project ID to duplicate
+     * @param request the duplication request
+     * @return a CompletableFuture containing the duplicated project
+     */
+    public CompletableFuture<Project> duplicateAsync(int id, ProjectDuplicateRequest request) {
+        return duplicateAsync(id, request, null);
+    }
+    
+    /**
+     * Duplicates a project with options asynchronously.
+     * 
+     * @param id the project ID to duplicate
+     * @param request the duplication request
+     * @param options request options
+     * @return a CompletableFuture containing the duplicated project
+     */
+    public CompletableFuture<Project> duplicateAsync(int id, ProjectDuplicateRequest request, RequestOptions options) {
+        return httpClient.postAsync("/api/projects/" + id + "/duplicate/", request, Project.class);
+    }
+    
+    /**
+     * Imports predictions into a project.
+     * 
+     * @param id the project ID
+     * @param predictions the predictions to import
+     * @return import result
+     */
+    public PredictionImportResult importPredictions(int id, List<PredictionImportRequest> predictions) {
+        return importPredictions(id, predictions, null);
+    }
+    
+    /**
+     * Imports predictions into a project with options.
+     * 
+     * @param id the project ID
+     * @param predictions the predictions to import
+     * @param options request options
+     * @return import result
+     */
+    public PredictionImportResult importPredictions(int id, List<PredictionImportRequest> predictions, RequestOptions options) {
+        return httpClient.post("/api/projects/" + id + "/import/predictions/", predictions, PredictionImportResult.class);
+    }
+    
+    /**
+     * Imports predictions into a project asynchronously.
+     * 
+     * @param id the project ID
+     * @param predictions the predictions to import
+     * @return a CompletableFuture containing the import result
+     */
+    public CompletableFuture<PredictionImportResult> importPredictionsAsync(int id, List<PredictionImportRequest> predictions) {
+        return importPredictionsAsync(id, predictions, null);
+    }
+    
+    /**
+     * Imports predictions into a project with options asynchronously.
+     * 
+     * @param id the project ID
+     * @param predictions the predictions to import
+     * @param options request options
+     * @return a CompletableFuture containing the import result
+     */
+    public CompletableFuture<PredictionImportResult> importPredictionsAsync(int id, List<PredictionImportRequest> predictions, RequestOptions options) {
+        return httpClient.postAsync("/api/projects/" + id + "/import/predictions/", predictions, PredictionImportResult.class);
+    }
+    
+    /**
+     * Builds query string from list options.
+     * 
+     * @param options the list options
+     * @return the query string (starting with ?)
+     */
+    private String buildQueryString(ProjectsListOptions options) {
+        StringBuilder sb = new StringBuilder("?");
+        boolean hasParam = false;
+        
+        if (options.getFilter() != null) {
+            sb.append("filter=").append(options.getFilter());
+            hasParam = true;
+        }
+        
+        if (options.getIds() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("ids=").append(options.getIds());
+            hasParam = true;
+        }
+        
+        if (options.getInclude() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("include=").append(options.getInclude());
+            hasParam = true;
+        }
+        
+        if (options.getMembersLimit() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("members_limit=").append(options.getMembersLimit());
+            hasParam = true;
+        }
+        
+        if (options.getOrdering() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("ordering=").append(options.getOrdering());
+            hasParam = true;
+        }
+        
+        if (options.getPage() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("page=").append(options.getPage());
+            hasParam = true;
+        }
+        
+        if (options.getPageSize() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("page_size=").append(options.getPageSize());
+            hasParam = true;
+        }
+        
+        if (options.getTitle() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("title=").append(options.getTitle());
+            hasParam = true;
+        }
+        
+        if (options.getWorkspaces() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("workspaces=").append(options.getWorkspaces());
+            hasParam = true;
+        }
+        
+        return hasParam ? sb.toString() : "";
     }
 }

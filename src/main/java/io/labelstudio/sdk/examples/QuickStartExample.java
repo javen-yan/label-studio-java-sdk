@@ -111,6 +111,21 @@ public class QuickStartExample {
             }
             System.out.println();
             
+            // 5.1 Demonstrate advanced project listing with filters
+            System.out.println("5.1 Demonstrating advanced project listing...");
+            Pagination<Project> filteredProjects = client.projects().list(
+                ProjectsListOptions.builder()
+                    .orderByCreatedAtDesc()
+                    .pageSize(5)
+                    .include("task_number,finished_task_number")
+                    .build()
+            );
+            System.out.println("   Recent projects (max 5):");
+            for (Project p : filteredProjects.getResults()) {
+                System.out.println("   - " + p.getTitle() + " (Tasks: " + p.getTaskNumber() + ", Finished: " + p.getFinishedTaskNumber() + ")");
+            }
+            System.out.println();
+            
             // 6. Create an annotation for the first task
             if (!tasks.getResults().isEmpty()) {
                 System.out.println("6. Creating an annotation for the first task...");
@@ -136,8 +151,26 @@ public class QuickStartExample {
                 System.out.println("   Annotation result: " + annotation.getResult() + "\n");
             }
             
-            // 7. List projects to verify everything was created
-            System.out.println("7. Listing all projects...");
+            // 7. Demonstrate export functionality
+            System.out.println("7. Creating and managing exports...");
+            Export export = client.projects().exports(project.getId()).create(
+                ExportCreateRequest.builder()
+                    .title("SDK Example Export")
+                    .json()
+                    .downloadAllTasks(true)
+                    .build()
+            );
+            System.out.println("   Created export: " + export.getTitle() + " (ID: " + export.getId() + ")");
+            System.out.println("   Export status: " + export.getStatus());
+            System.out.println("   Export type: " + export.getExportType());
+            
+            // List all exports for the project
+            Pagination<Export> exports = client.projects().exports(project.getId()).list();
+            System.out.println("   Total exports for project: " + exports.getCount());
+            System.out.println();
+            
+            // 8. List projects to verify everything was created
+            System.out.println("8. Listing all projects...");
             Pagination<Project> projects = client.projects().list();
             System.out.println("   Total projects: " + projects.getCount());
             for (Project p : projects.getResults()) {
@@ -145,8 +178,8 @@ public class QuickStartExample {
             }
             System.out.println();
             
-            // 8. Cleanup (optional - remove the created project)
-            System.out.println("8. Cleaning up...");
+            // 9. Cleanup (optional - remove the created project)
+            System.out.println("9. Cleaning up...");
             System.out.println("   To clean up, you can delete the project with ID: " + project.getId());
             System.out.println("   Uncomment the line below to automatically delete the project:");
             // client.projects().delete(project.getId());
