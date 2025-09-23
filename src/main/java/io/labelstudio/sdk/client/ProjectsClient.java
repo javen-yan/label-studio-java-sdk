@@ -47,6 +47,46 @@ public class ProjectsClient {
     }
     
     /**
+     * Gets the metrics client for a specific project.
+     * 
+     * @param projectId the project ID
+     * @return the project metrics client
+     */
+    public ProjectMetricsClient metrics(int projectId) {
+        return new ProjectMetricsClient(httpClient, projectId);
+    }
+    
+    /**
+     * Gets the stats client for a specific project.
+     * 
+     * @param projectId the project ID
+     * @return the project stats client
+     */
+    public ProjectStatsClient stats(int projectId) {
+        return new ProjectStatsClient(httpClient, projectId);
+    }
+    
+    /**
+     * Gets the assignments client for a specific project.
+     * 
+     * @param projectId the project ID
+     * @return the project assignments client
+     */
+    public ProjectAssignmentsClient assignments(int projectId) {
+        return new ProjectAssignmentsClient(httpClient, projectId);
+    }
+    
+    /**
+     * Gets the pauses client for a specific project.
+     * 
+     * @param projectId the project ID
+     * @return the project pauses client
+     */
+    public ProjectPausesClient pauses(int projectId) {
+        return new ProjectPausesClient(httpClient, projectId);
+    }
+    
+    /**
      * Lists all projects.
      * 
      * @return a paginated list of projects
