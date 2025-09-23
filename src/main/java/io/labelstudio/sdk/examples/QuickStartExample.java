@@ -2,17 +2,22 @@ package io.labelstudio.sdk.examples;
 
 import io.labelstudio.sdk.LabelStudio;
 import io.labelstudio.sdk.client.AnnotationCreateRequest;
+import io.labelstudio.sdk.client.ExportCreateRequest;
+import io.labelstudio.sdk.client.LabelConfigValidationResult;
 import io.labelstudio.sdk.client.ProjectCreateRequest;
+import io.labelstudio.sdk.client.ProjectsListOptions;
 import io.labelstudio.sdk.client.TaskCreateRequest;
 import io.labelstudio.sdk.core.ApiError;
 import io.labelstudio.sdk.core.LabelStudioEnvironment;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.models.Annotation;
+import io.labelstudio.sdk.models.Export;
 import io.labelstudio.sdk.models.Project;
 import io.labelstudio.sdk.models.Task;
 import io.labelstudio.sdk.models.UserSimple;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +33,15 @@ import java.util.Map;
  * </ol>
  */
 public class QuickStartExample {
+    
+    /**
+     * Helper method to create a map with a single key-value pair (Java 8 compatible)
+     */
+    private static Map<String, Object> createMap(String key, Object value) {
+        Map<String, Object> map = new HashMap<>();
+        map.put(key, value);
+        return map;
+    }
     
     public static void main(String[] args) {
         try {
@@ -46,17 +60,15 @@ public class QuickStartExample {
             
             // 2. Create a project
             System.out.println("2. Creating a new project...");
-            String labelConfig = """
-                    <View>
-                      <Header value="Choose text sentiment:"/>
-                      <Text name="text" value="$text"/>
-                      <Choices name="sentiment" toName="text" choice="single">
-                        <Choice value="Positive"/>
-                        <Choice value="Negative"/>
-                        <Choice value="Neutral"/>
-                      </Choices>
-                    </View>
-                    """;
+            String labelConfig = "<View>\n" +
+                    "  <Header value=\"Choose text sentiment:\"/>\n" +
+                    "  <Text name=\"text\" value=\"$text\"/>\n" +
+                    "  <Choices name=\"sentiment\" toName=\"text\" choice=\"single\">\n" +
+                    "    <Choice value=\"Positive\"/>\n" +
+                    "    <Choice value=\"Negative\"/>\n" +
+                    "    <Choice value=\"Neutral\"/>\n" +
+                    "  </Choices>\n" +
+                    "</View>";
             
             ProjectCreateRequest projectRequest = ProjectCreateRequest.builder()
                     .title("SDK Example: Sentiment Analysis")
@@ -72,7 +84,7 @@ public class QuickStartExample {
             
             // 3. Validate label configuration
             System.out.println("3. Validating label configuration...");
-            var validation = client.projects().validateLabelConfig(project.getId(), labelConfig);
+            LabelConfigValidationResult validation = client.projects().validateLabelConfig(project.getId(), labelConfig);
             if (validation.isValid()) {
                 System.out.println("   ✓ Label configuration is valid\n");
             } else {
@@ -82,11 +94,11 @@ public class QuickStartExample {
             // 4. Import tasks
             System.out.println("4. Creating tasks...");
             List<Map<String, Object>> taskData = Arrays.asList(
-                    Map.of("text", "I absolutely love this new product! It's amazing!"),
-                    Map.of("text", "This is the worst thing I've ever bought. Terrible quality."),
-                    Map.of("text", "It's okay, nothing special. Average quality for the price."),
-                    Map.of("text", "Fantastic customer service and quick delivery!"),
-                    Map.of("text", "Completely useless. I want my money back.")
+                    createMap("text", "I absolutely love this new product! It's amazing!"),
+                    createMap("text", "This is the worst thing I've ever bought. Terrible quality."),
+                    createMap("text", "It's okay, nothing special. Average quality for the price."),
+                    createMap("text", "Fantastic customer service and quick delivery!"),
+                    createMap("text", "Completely useless. I want my money back.")
             );
             
             // Create tasks one by one (alternatively, you could use importTasks for bulk import)
@@ -131,14 +143,16 @@ public class QuickStartExample {
                 System.out.println("6. Creating an annotation for the first task...");
                 Task firstTask = tasks.getResults().get(0);
                 
-                List<Map<String, Object>> annotationResult = Arrays.asList(
-                        Map.of(
-                                "from_name", "sentiment",
-                                "to_name", "text",
-                                "type", "choices",
-                                "value", Map.of("choices", Arrays.asList("Positive"))
-                        )
-                );
+                Map<String, Object> annotationMap = new HashMap<>();
+                annotationMap.put("from_name", "sentiment");
+                annotationMap.put("to_name", "text");
+                annotationMap.put("type", "choices");
+                
+                Map<String, Object> valueMap = new HashMap<>();
+                valueMap.put("choices", Arrays.asList("Positive"));
+                annotationMap.put("value", valueMap);
+                
+                List<Map<String, Object>> annotationResult = Arrays.asList(annotationMap);
                 
                 AnnotationCreateRequest annotationRequest = AnnotationCreateRequest.builder()
                         .task(firstTask.getId())

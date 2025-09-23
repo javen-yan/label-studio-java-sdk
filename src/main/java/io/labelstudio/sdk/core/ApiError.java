@@ -20,6 +20,18 @@ public class ApiError extends RuntimeException {
     }
     
     /**
+     * Constructs a new API error with a cause.
+     * 
+     * @param message the error message
+     * @param cause the underlying cause
+     */
+    public ApiError(String message, Throwable cause) {
+        super(message, cause);
+        this.statusCode = -1;
+        this.body = message;
+    }
+    
+    /**
      * Constructs a new API error with status code and response body.
      * 
      * @param message the error message
