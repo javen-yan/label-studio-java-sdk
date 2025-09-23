@@ -47,6 +47,11 @@ public class LabelStudio {
     private final MlClient ml;
     private final WebhooksClient webhooks;
     private final ViewsClient views;
+    private final ActivityLogsClient activityLogs;
+    private final AnnotationHistoryClient annotationHistory;
+    private final AnnotationReviewsClient annotationReviews;
+    private final CommentsClient comments;
+    private final FilesClient files;
     
     private LabelStudio(Builder builder) {
         String baseUrl = determineBaseUrl(builder.baseUrl, builder.environment);
@@ -72,6 +77,11 @@ public class LabelStudio {
         this.ml = new MlClient(httpClient);
         this.webhooks = new WebhooksClient(httpClient);
         this.views = new ViewsClient(httpClient);
+        this.activityLogs = new ActivityLogsClient(httpClient);
+        this.annotationHistory = new AnnotationHistoryClient(httpClient);
+        this.annotationReviews = new AnnotationReviewsClient(httpClient);
+        this.comments = new CommentsClient(httpClient);
+        this.files = new FilesClient(httpClient);
     }
     
     /**
@@ -162,6 +172,51 @@ public class LabelStudio {
      */
     public ViewsClient views() {
         return views;
+    }
+    
+    /**
+     * Gets the activity logs client for managing activity logs.
+     * 
+     * @return the activity logs client
+     */
+    public ActivityLogsClient activityLogs() {
+        return activityLogs;
+    }
+    
+    /**
+     * Gets the annotation history client for managing annotation history.
+     * 
+     * @return the annotation history client
+     */
+    public AnnotationHistoryClient annotationHistory() {
+        return annotationHistory;
+    }
+    
+    /**
+     * Gets the annotation reviews client for managing annotation reviews.
+     * 
+     * @return the annotation reviews client
+     */
+    public AnnotationReviewsClient annotationReviews() {
+        return annotationReviews;
+    }
+    
+    /**
+     * Gets the comments client for managing comments.
+     * 
+     * @return the comments client
+     */
+    public CommentsClient comments() {
+        return comments;
+    }
+    
+    /**
+     * Gets the files client for managing files.
+     * 
+     * @return the files client
+     */
+    public FilesClient files() {
+        return files;
     }
     
     /**
