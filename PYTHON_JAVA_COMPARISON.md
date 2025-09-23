@@ -35,7 +35,7 @@ LabelStudio client = LabelStudio.builder()
 // 使用子客户端
 client.projects().list();
 client.projects().exports(projectId).list();
-// client.projects().members(projectId).list(); // 待实现
+client.projects().members(projectId).list();
 client.tasks().list(projectId);
 client.annotations().list();
 ```
@@ -76,6 +76,12 @@ client.annotations().list();
 | **用户管理** |
 | 当前用户 | `client.users.whoami()` | `client.users().whoami()` | ✅ |
 | 获取用户 | `client.users.get(id)` | `client.users().get(id)` | ✅ |
+|| **项目成员管理** |
+| 列出成员 | `client.projects.members.list(id)` | `client.projects().members(id).list()` | ✅ |
+| 添加成员 | `client.projects.members.create(id)` | `client.projects().members(id).create()` | ✅ |
+| 获取成员 | `client.projects.members.get(id, member_id)` | `client.projects().members(id).get(memberId)` | ✅ |
+| 更新成员 | `client.projects.members.update(id, member_id)` | `client.projects().members(id).update(memberId)` | ✅ |
+| 删除成员 | `client.projects.members.delete(id, member_id)` | `client.projects().members(id).delete(memberId)` | ✅ |
 
 ### 🚧 部分实现的功能
 
@@ -92,9 +98,6 @@ client.annotations().list();
 | 功能分类 | Python 方法 | Java 状态 | 优先级 |
 |----------|-------------|-----------|--------|
 | **项目成员管理** |
-| 列出成员 | `client.projects.members.list(id)` | ❌ | 高 |
-| 添加成员 | `client.projects.members.create(id)` | ❌ | 高 |
-| 删除成员 | `client.projects.members.delete(id, user_id)` | ❌ | 高 |
 | 批量操作 | `client.projects.members.bulk.*()` | ❌ | 中 |
 | **项目指标** |
 | 获取指标 | `client.projects.metrics.*()` | ❌ | 中 |
@@ -223,6 +226,58 @@ byte[] data = client.projects().exports(projectId).download(
 );
 ```
 
+### 4. 项目成员管理
+
+**Python:**
+```python
+# 列出项目成员
+members = client.projects.members.list(project_id)
+
+# 添加成员
+new_member = client.projects.members.create(
+    id=project_id,
+    user=user_id,
+    role="annotator",
+    enabled=True
+)
+
+# 更新成员角色
+updated_member = client.projects.members.update(
+    id=project_id,
+    member_id=member_id,
+    role="reviewer"
+)
+
+# 删除成员
+client.projects.members.delete(project_id, member_id)
+```
+
+**Java:**
+```java
+// 列出项目成员
+Pagination<ProjectMember> members = client.projects().members(projectId).list();
+
+// 添加成员
+ProjectMember newMember = client.projects().members(projectId).create(
+    MemberCreateRequest.builder()
+        .userId(userId)
+        .annotator()
+        .enabled()
+        .build()
+);
+
+// 更新成员角色
+ProjectMember updatedMember = client.projects().members(projectId).update(
+    memberId,
+    MemberUpdateRequest.builder()
+        .reviewer()
+        .build()
+);
+
+// 删除成员
+client.projects().members(projectId).delete(memberId);
+```
+
 ## 异步支持对比
 
 ### Python (async/await)
@@ -337,26 +392,28 @@ LabelStudio client = LabelStudio.builder().apiKey("key").build();
 
 ## 总结
 
-Java 版本的 SDK 已经实现了 Python 版本的**核心功能**（约 80%），包括：
+Java 版本的 SDK 已经实现了 Python 版本的**核心功能**（约 85%），包括：
 
 ✅ **完全对等的功能：**
 - 项目的 CRUD 操作
 - 任务的 CRUD 操作  
 - 标注的 CRUD 操作
 - 导出管理
+- 项目成员管理
+- 用户管理
 - 高级查询和过滤
 - 异步支持
 - 错误处理
 
 🚧 **需要补充的功能：**
-- 项目成员管理（高优先级）
 - 项目指标和统计（中优先级）
 - 任务分配管理（中优先级）
+- 批量成员操作（中优先级）
 - 其他高级功能（低优先级）
 
 **迁移难度：** 低到中等
 **API 一致性：** 高（95%+）
-**功能完整性：** 中到高（80%+核心功能）
+**功能完整性：** 高（85%+核心功能）
 
 从 Python 迁移到 Java 时，用户只需要：
 1. 调整语法（方法调用加括号）
@@ -364,4 +421,4 @@ Java 版本的 SDK 已经实现了 Python 版本的**核心功能**（约 80%）
 3. 处理强类型系统
 4. 对于缺失的高级功能，可以暂时使用 HTTP 客户端直接调用 API
 
-总体而言，Java 版本为用户提供了与 Python 版本高度一致的开发体验。
+总体而言，Java 版本为用户提供了与 Python 版本高度一致的开发体验，现在包括完整的项目成员管理功能。

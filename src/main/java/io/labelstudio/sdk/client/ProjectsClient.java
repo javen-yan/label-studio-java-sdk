@@ -37,6 +37,16 @@ public class ProjectsClient {
     }
     
     /**
+     * Gets the members client for a specific project.
+     * 
+     * @param projectId the project ID
+     * @return the project members client
+     */
+    public ProjectMembersClient members(int projectId) {
+        return new ProjectMembersClient(httpClient, projectId);
+    }
+    
+    /**
      * Lists all projects.
      * 
      * @return a paginated list of projects
