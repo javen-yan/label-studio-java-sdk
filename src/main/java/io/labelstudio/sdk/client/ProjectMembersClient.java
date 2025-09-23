@@ -279,6 +279,138 @@ public class ProjectMembersClient {
     }
     
     /**
+     * Performs bulk operations on project members.
+     * 
+     * @param request the bulk member request
+     * @return the bulk operation result
+     */
+    public BulkMemberResult bulkAdd(BulkMemberRequest request) {
+        return bulkAdd(request, null);
+    }
+    
+    /**
+     * Performs bulk operations on project members with options.
+     * 
+     * @param request the bulk member request
+     * @param requestOptions request options
+     * @return the bulk operation result
+     */
+    public BulkMemberResult bulkAdd(BulkMemberRequest request, RequestOptions requestOptions) {
+        String path = "/api/projects/" + projectId + "/members/bulk/";
+        return httpClient.post(path, request, BulkMemberResult.class);
+    }
+    
+    /**
+     * Performs bulk operations on project members asynchronously.
+     * 
+     * @param request the bulk member request
+     * @return a CompletableFuture containing the bulk operation result
+     */
+    public CompletableFuture<BulkMemberResult> bulkAddAsync(BulkMemberRequest request) {
+        return bulkAddAsync(request, null);
+    }
+    
+    /**
+     * Performs bulk operations on project members with options asynchronously.
+     * 
+     * @param request the bulk member request
+     * @param requestOptions request options
+     * @return a CompletableFuture containing the bulk operation result
+     */
+    public CompletableFuture<BulkMemberResult> bulkAddAsync(BulkMemberRequest request, RequestOptions requestOptions) {
+        String path = "/api/projects/" + projectId + "/members/bulk/";
+        return httpClient.postAsync(path, request, BulkMemberResult.class);
+    }
+    
+    /**
+     * Performs bulk removal of project members.
+     * 
+     * @param request the bulk member request
+     * @return the bulk operation result
+     */
+    public BulkMemberResult bulkRemove(BulkMemberRequest request) {
+        return bulkRemove(request, null);
+    }
+    
+    /**
+     * Performs bulk removal of project members with options.
+     * 
+     * @param request the bulk member request
+     * @param requestOptions request options
+     * @return the bulk operation result
+     */
+    public BulkMemberResult bulkRemove(BulkMemberRequest request, RequestOptions requestOptions) {
+        String path = "/api/projects/" + projectId + "/members/bulk-remove/";
+        return httpClient.post(path, request, BulkMemberResult.class);
+    }
+    
+    /**
+     * Performs bulk removal of project members asynchronously.
+     * 
+     * @param request the bulk member request
+     * @return a CompletableFuture containing the bulk operation result
+     */
+    public CompletableFuture<BulkMemberResult> bulkRemoveAsync(BulkMemberRequest request) {
+        return bulkRemoveAsync(request, null);
+    }
+    
+    /**
+     * Performs bulk removal of project members with options asynchronously.
+     * 
+     * @param request the bulk member request
+     * @param requestOptions request options
+     * @return a CompletableFuture containing the bulk operation result
+     */
+    public CompletableFuture<BulkMemberResult> bulkRemoveAsync(BulkMemberRequest request, RequestOptions requestOptions) {
+        String path = "/api/projects/" + projectId + "/members/bulk-remove/";
+        return httpClient.postAsync(path, request, BulkMemberResult.class);
+    }
+    
+    /**
+     * Performs bulk update of project members.
+     * 
+     * @param request the bulk member request
+     * @return the bulk operation result
+     */
+    public BulkMemberResult bulkUpdate(BulkMemberRequest request) {
+        return bulkUpdate(request, null);
+    }
+    
+    /**
+     * Performs bulk update of project members with options.
+     * 
+     * @param request the bulk member request
+     * @param requestOptions request options
+     * @return the bulk operation result
+     */
+    public BulkMemberResult bulkUpdate(BulkMemberRequest request, RequestOptions requestOptions) {
+        String path = "/api/projects/" + projectId + "/members/bulk-update/";
+        return httpClient.post(path, request, BulkMemberResult.class);
+    }
+    
+    /**
+     * Performs bulk update of project members asynchronously.
+     * 
+     * @param request the bulk member request
+     * @return a CompletableFuture containing the bulk operation result
+     */
+    public CompletableFuture<BulkMemberResult> bulkUpdateAsync(BulkMemberRequest request) {
+        return bulkUpdateAsync(request, null);
+    }
+    
+    /**
+     * Performs bulk update of project members with options asynchronously.
+     * 
+     * @param request the bulk member request
+     * @param requestOptions request options
+     * @return a CompletableFuture containing the bulk operation result
+     */
+    public CompletableFuture<BulkMemberResult> bulkUpdateAsync(BulkMemberRequest request, RequestOptions requestOptions) {
+        String path = "/api/projects/" + projectId + "/members/bulk-update/";
+        return httpClient.postAsync(path, request, BulkMemberResult.class);
+    }
+    
+    /**
      * Gets the project ID this client is associated with.
      * 
      * @return the project ID
