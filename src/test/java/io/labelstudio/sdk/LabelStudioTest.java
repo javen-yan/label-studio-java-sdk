@@ -1,8 +1,6 @@
 package io.labelstudio.sdk;
 
 import io.labelstudio.sdk.client.ProjectCreateRequest;
-import io.labelstudio.sdk.core.LabelStudioEnvironment;
-import io.labelstudio.sdk.models.Project;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -20,7 +18,7 @@ public class LabelStudioTest {
         // Note: These tests require a running Label Studio instance and valid API key
         // For unit testing, you would typically use mock servers
         client = LabelStudio.builder()
-                .environment(LabelStudioEnvironment.DEFAULT)
+                .baseUrl("http://localhost:8080")
                 .apiKey("test-api-key") // This should be a real API key for integration tests
                 .build();
     }
@@ -36,17 +34,15 @@ public class LabelStudioTest {
     
     @Test
     public void testProjectCreateRequestBuilder() {
-        String labelConfig = """
-                <View>
-                  <Header value="Choose text sentiment:"/>
-                  <Text name="text" value="$text"/>
-                  <Choices name="sentiment" toName="text" choice="single">
-                    <Choice value="Positive"/>
-                    <Choice value="Negative"/>
-                    <Choice value="Neutral"/>
-                  </Choices>
-                </View>
-                """;
+        String labelConfig = "<View>\\n" +
+                "  <Header value=\\\"Choose text sentiment:\\\"/>\\n" +
+                "  <Text name=\\\"text\\\" value=\\\"$text\\\"/>\\n" +
+                "  <Choices name=\\\"sentiment\\\" toName=\\\"text\\\" choice=\\\"single\\\">\\n" +
+                "    <Choice value=\\\"Positive\\\"/>\\n" +
+                "    <Choice value=\\\"Negative\\\"/>\\n" +
+                "    <Choice value=\\\"Neutral\\\"/>\\n" +
+                "  </Choices>\\n" +
+                "</View>";
         
         ProjectCreateRequest request = ProjectCreateRequest.builder()
                 .title("Test Project")
@@ -68,7 +64,7 @@ public class LabelStudioTest {
     @Test
     public void testBuilderWithEnvironment() {
         LabelStudio prodClient = LabelStudio.builder()
-                .environment(LabelStudioEnvironment.PRODUCTION)
+                .baseUrl("http://localhost:8080")
                 .apiKey("test-key")
                 .build();
         
@@ -89,15 +85,13 @@ public class LabelStudioTest {
     /*
     @Test
     public void testCreateProject() {
-        String labelConfig = """
-                <View>
-                  <Text name="text" value="$text"/>
-                  <Choices name="sentiment" toName="text" choice="single">
-                    <Choice value="Positive"/>
-                    <Choice value="Negative"/>
-                  </Choices>
-                </View>
-                """;
+        String labelConfig = "<View>\\n" +
+                "  <Text name=\\\"text\\\" value=\\\"$text\\\"/>\\n" +
+                "  <Choices name=\\\"sentiment\\\" toName=\\\"text\\\" choice=\\\"single\\\">\\n" +
+                "    <Choice value=\\\"Positive\\\"/>\\n" +
+                "    <Choice value=\\\"Negative\\\"/>\\n" +
+                "  </Choices>\\n" +
+                "</View>";
         
         ProjectCreateRequest request = ProjectCreateRequest.builder()
                 .title("SDK Test Project")

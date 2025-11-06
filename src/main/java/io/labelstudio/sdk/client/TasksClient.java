@@ -4,8 +4,6 @@ import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.core.RequestOptions;
 import io.labelstudio.sdk.models.Task;
-
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -42,9 +40,37 @@ public class TasksClient {
      * @return a paginated list of tasks
      */
     public Pagination<Task> list(int projectId, RequestOptions options) {
-        return httpClient.get("/api/projects/" + projectId + "/tasks/", 
-                httpClient.getObjectMapper().getTypeFactory()
-                        .constructParametricType(Pagination.class, Task.class));
+        try {
+            // Try to get as Pagination first
+            return httpClient.get("/api/projects/" + projectId + "/tasks/", 
+                    httpClient.getObjectMapper().getTypeFactory()
+                            .constructParametricType(Pagination.class, Task.class));
+        } catch (io.labelstudio.sdk.core.ApiError e) {
+            // Check if the error is due to MismatchedInputException (array instead of object)
+            Throwable cause = e.getCause();
+            if (cause instanceof com.fasterxml.jackson.databind.exc.MismatchedInputException ||
+                (e.getMessage() != null && e.getMessage().contains("MismatchedInputException"))) {
+                // If it fails, the API might return an array directly
+                // Try to parse as array and wrap it in Pagination
+                try {
+                    java.util.List<Task> tasks = httpClient.get("/api/projects/" + projectId + "/tasks/", 
+                            httpClient.getObjectMapper().getTypeFactory()
+                                    .constructCollectionType(java.util.List.class, Task.class));
+                    Pagination<Task> pagination = new Pagination<>();
+                    pagination.setCount(tasks.size());
+                    pagination.setResults(tasks);
+                    pagination.setNext(null);
+                    pagination.setPrevious(null);
+                    return pagination;
+                } catch (Exception e2) {
+                    // If that also fails, rethrow the original exception
+                    throw e;
+                }
+            } else {
+                // If it's a different error, rethrow it
+                throw e;
+            }
+        }
     }
     
     /**

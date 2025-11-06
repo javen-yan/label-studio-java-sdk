@@ -2,8 +2,6 @@ package io.labelstudio.sdk.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Map;
-
 /**
  * Request object for creating import storage configurations.
  */

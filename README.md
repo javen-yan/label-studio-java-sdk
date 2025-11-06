@@ -1,9 +1,8 @@
 # Label Studio Java SDK
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.labelstudio/label-studio-sdk.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.labelstudio%22%20AND%20a:%22label-studio-sdk%22)
-[![Java](https://img.shields.io/badge/Java-11%2B-blue.svg)](https://adoptium.net/)
+[![Java](https://img.shields.io/badge/Java-8%2B-blue.svg)](https://adoptium.net/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Build Status](https://github.com/javen-yan/label-studio-sdk-java/workflows/CI/badge.svg)](https://github.com/javen-yan/label-studio-sdk-java/actions)
 
 A comprehensive Java client library for the [Label Studio](https://labelstud.io/) API, providing **100% feature parity** with the Python SDK. Built for production use with type safety, async support, and modern Java practices.
 
