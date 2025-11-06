@@ -3,7 +3,8 @@ package io.labelstudio.sdk;
 import io.labelstudio.sdk.client.*;
 import io.labelstudio.sdk.core.ApiError;
 import io.labelstudio.sdk.core.HttpClient;
-import io.labelstudio.sdk.core.LabelStudioEnvironment;
+import io.labelstudio.sdk.core.TokenManager;
+import io.labelstudio.sdk.models.LoginResponse;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -53,24 +54,29 @@ public class LabelStudio {
     private final CommentsClient comments;
     private final FilesClient files;
     
+    private final TokenManager tokenManager;
+    
     private LabelStudio(Builder builder) {
-        String baseUrl = determineBaseUrl(builder.baseUrl, builder.environment);
+        String baseUrl = determineBaseUrl(builder.baseUrl);
         String apiKey = determineApiKey(builder.apiKey);
         
-        if (apiKey == null || apiKey.trim().isEmpty()) {
-            throw new ApiError("API key is required. Set it via builder.apiKey() or LABEL_STUDIO_API_KEY environment variable.");
-        }
-        
-        Map<String, String> defaultHeaders = createDefaultHeaders(apiKey);
-        
-        this.httpClient = new HttpClient(baseUrl, defaultHeaders, 
+        // Create HTTP client first (without auth headers, will be set by interceptor)
+        this.httpClient = new HttpClient(baseUrl, null, 
                 builder.timeout != null ? builder.timeout : DEFAULT_TIMEOUT);
         
-        // Initialize sub-clients
+        // Initialize sub-clients (users client needed for token refresh)
+        this.users = new UsersClient(httpClient);
+        
+        // Create token manager
+        this.tokenManager = new TokenManager(baseUrl, apiKey, users);
+        
+        // Update HTTP client to use token manager
+        this.httpClient.setTokenManager(tokenManager);
+        
+        // Initialize remaining sub-clients
         this.projects = new ProjectsClient(httpClient);
         this.tasks = new TasksClient(httpClient);
         this.annotations = new AnnotationsClient(httpClient);
-        this.users = new UsersClient(httpClient);
         this.organizations = new OrganizationsClient(httpClient);
         this.exportStorage = new ExportStorageClient(httpClient);
         this.importStorage = new ImportStorageClient(httpClient);
@@ -237,20 +243,82 @@ public class LabelStudio {
         return new Builder();
     }
     
-    private static String determineBaseUrl(String baseUrl, LabelStudioEnvironment environment) {
+    /**
+     * Creates a Label Studio client by logging in with email and password.
+     * 
+     * <p>This method creates a temporary client, performs login, and then
+     * creates a new authenticated client using the returned token.</p>
+     * 
+     * <p>Example usage:</p>
+     * <pre>
+     * LabelStudio client = LabelStudio.login(
+     *     LabelStudioEnvironment.DEFAULT,
+     *     "user@example.com",
+     *     "password"
+     * );
+     * </pre>
+     * 
+     * @param environment the Label Studio environment
+     * @param email the user email
+     * @param password the user password
+     * @return an authenticated Label Studio client
+     * @throws ApiError if login fails
+     */
+    public static LabelStudio login(String baseUrl, String email, String password, Duration timeout) {
+        // Create a temporary client without API key for login
+        Builder tempBuilder = new Builder();
+        tempBuilder.baseUrl(baseUrl);
+        tempBuilder.timeout(timeout);
+        LabelStudio tempClient = tempBuilder.build();
+        
+        // Perform login
+        LoginResponse loginResponse = tempClient.users().login(email, password);
+        String token = loginResponse.getToken();
+        
+        if (token == null || token.trim().isEmpty()) {
+            throw new ApiError("Login failed: token is null or empty");
+        }
+        
+        // Log token info for debugging (masked)
+        String maskedToken = token.length() > 30 ? token.substring(0, 30) + "..." : token;
+        java.util.logging.Logger.getLogger(LabelStudio.class.getName())
+            .info("Login successful, token length: " + token.length() + ", starts with: " + maskedToken);
+        
+        // Create and return authenticated client
+        return new Builder()
+                .baseUrl(baseUrl)
+                .apiKey(token)
+                .timeout(timeout)
+                .build();
+    }
+    
+    /**
+     * Creates a Label Studio client by logging in with email and password.
+     * 
+     * <p>This method creates a temporary client, performs login, and then
+     * creates a new authenticated client using the returned token.</p>
+     * 
+     * @param baseUrl the base URL of the Label Studio instance
+     * @param email the user email
+     * @param password the user password
+     * @return an authenticated Label Studio client
+     * @throws ApiError if login fails
+     */
+    public static LabelStudio login(String baseUrl, String email, String password) {
+        return login(baseUrl, email, password, DEFAULT_TIMEOUT);
+    }
+    
+    private static String determineBaseUrl(String baseUrl) {
         if (baseUrl != null && !baseUrl.trim().isEmpty()) {
             return baseUrl.trim();
         }
-        
-        if (environment != null) {
-            return environment.getUrl();
-        }
-        
-        return LabelStudioEnvironment.DEFAULT.getUrl();
+        throw new IllegalArgumentException("Base URL is required");
     }
     
     private static String determineApiKey(String apiKey) {
-        if (apiKey != null && !apiKey.trim().isEmpty()) {
+        // If apiKey is explicitly provided (even if empty string), use it
+        // Only fall back to environment variable if apiKey is null
+        if (apiKey != null) {
             return apiKey.trim();
         }
         
@@ -259,7 +327,12 @@ public class LabelStudio {
     
     private static Map<String, String> createDefaultHeaders(String apiKey) {
         Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Token " + apiKey);
+        // Only add Authorization header if apiKey is provided
+        if (apiKey != null && !apiKey.trim().isEmpty()) {
+            // Use Bearer prefix as per Label Studio API documentation
+            String authValue = "Bearer " + apiKey.trim();
+            headers.put("Authorization", authValue);
+        }
         headers.put("Content-Type", "application/json");
         headers.put("User-Agent", "label-studio-sdk-java/" + SDK_VERSION);
         headers.put("X-SDK-Language", "Java");
@@ -273,7 +346,6 @@ public class LabelStudio {
      */
     public static class Builder {
         private String baseUrl;
-        private LabelStudioEnvironment environment;
         private String apiKey;
         private Duration timeout;
         
@@ -285,17 +357,6 @@ public class LabelStudio {
          */
         public Builder baseUrl(String baseUrl) {
             this.baseUrl = baseUrl;
-            return this;
-        }
-        
-        /**
-         * Sets the environment for the Label Studio instance.
-         * 
-         * @param environment the environment
-         * @return this builder
-         */
-        public Builder environment(LabelStudioEnvironment environment) {
-            this.environment = environment;
             return this;
         }
         

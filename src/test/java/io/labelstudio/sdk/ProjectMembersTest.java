@@ -33,10 +33,11 @@ public class ProjectMembersTest {
     }
     
     @Test
+    @SuppressWarnings("unchecked")
     public void testList() {
         // Given
         Pagination<ProjectMember> expectedMembers = new Pagination<>();
-        when(httpClient.get(eq("/api/projects/123/members/"), any())).thenReturn(expectedMembers);
+        when(httpClient.get(eq("/api/projects/123/members/"), any(Class.class))).thenReturn(expectedMembers);
         
         // When
         Pagination<ProjectMember> result = membersClient.list();

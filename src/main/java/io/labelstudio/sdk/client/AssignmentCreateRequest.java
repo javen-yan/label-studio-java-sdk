@@ -2,8 +2,6 @@ package io.labelstudio.sdk.client;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
 /**
  * Request object for creating task assignments.
  */

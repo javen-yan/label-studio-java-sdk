@@ -26,7 +26,11 @@ public class AnnotationsClient {
     }
     
     public Annotation create(AnnotationCreateRequest request) {
-        return httpClient.post("/api/annotations/", request, Annotation.class);
+        // Label Studio API requires task ID in the path
+        if (request.getTask() == null) {
+            throw new IllegalArgumentException("Task ID is required to create an annotation");
+        }
+        return httpClient.post("/api/tasks/" + request.getTask() + "/annotations/", request, Annotation.class);
     }
     
     public Annotation update(int id, AnnotationUpdateRequest request) {

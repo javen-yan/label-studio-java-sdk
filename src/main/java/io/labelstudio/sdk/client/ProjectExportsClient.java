@@ -1,10 +1,10 @@
 package io.labelstudio.sdk.client;
 
 import io.labelstudio.sdk.core.HttpClient;
-import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.core.RequestOptions;
 import io.labelstudio.sdk.models.Export;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -27,24 +27,16 @@ public class ProjectExportsClient {
     }
     
     /**
-     * Lists all exports for the project.
-     * 
-     * @return a paginated list of exports
-     */
-    public Pagination<Export> list() {
-        return list(null);
-    }
-    
-    /**
      * Lists exports for the project with options.
      * 
      * @param options request options
      * @return a paginated list of exports
      */
-    public Pagination<Export> list(RequestOptions options) {
-        return httpClient.get("/api/projects/" + projectId + "/exports/", 
-                httpClient.getObjectMapper().getTypeFactory()
-                        .constructParametricType(Pagination.class, Export.class));
+    public List<Export> list(RequestOptions options) {
+        List<Export> exports = httpClient.get("/api/projects/" + projectId + "/exports/", 
+                            httpClient.getObjectMapper().getTypeFactory()
+                                    .constructCollectionType(List.class, Export.class));
+        return exports;
     }
     
     /**
@@ -52,7 +44,7 @@ public class ProjectExportsClient {
      * 
      * @return a CompletableFuture containing a paginated list of exports
      */
-    public CompletableFuture<Pagination<Export>> listAsync() {
+    public CompletableFuture<List<Export>> listAsync() {
         return listAsync(null);
     }
     
@@ -62,10 +54,10 @@ public class ProjectExportsClient {
      * @param options request options
      * @return a CompletableFuture containing a paginated list of exports
      */
-    public CompletableFuture<Pagination<Export>> listAsync(RequestOptions options) {
+    public CompletableFuture<List<Export>> listAsync(RequestOptions options) {
         return httpClient.getAsync("/api/projects/" + projectId + "/exports/", 
                 httpClient.getObjectMapper().getTypeFactory()
-                        .constructParametricType(Pagination.class, Export.class));
+                        .constructCollectionType(List.class, Export.class));
     }
     
     /**
@@ -128,7 +120,7 @@ public class ProjectExportsClient {
      * @return the export
      */
     public Export get(int exportId, RequestOptions options) {
-        return httpClient.get("/api/projects/" + projectId + "/exports/" + exportId + "/", Export.class);
+        return httpClient.get("/api/projects/" + projectId + "/exports/" + exportId, Export.class);
     }
     
     /**
@@ -149,7 +141,7 @@ public class ProjectExportsClient {
      * @return a CompletableFuture containing the export
      */
     public CompletableFuture<Export> getAsync(int exportId, RequestOptions options) {
-        return httpClient.getAsync("/api/projects/" + projectId + "/exports/" + exportId + "/", Export.class);
+        return httpClient.getAsync("/api/projects/" + projectId + "/exports/" + exportId, Export.class);
     }
     
     /**
@@ -168,7 +160,7 @@ public class ProjectExportsClient {
      * @param options request options
      */
     public void delete(int exportId, RequestOptions options) {
-        httpClient.delete("/api/projects/" + projectId + "/exports/" + exportId + "/", Void.class);
+        httpClient.delete("/api/projects/" + projectId + "/exports/" + exportId, Void.class);
     }
     
     /**
@@ -189,7 +181,7 @@ public class ProjectExportsClient {
      * @return a CompletableFuture that completes when the export is deleted
      */
     public CompletableFuture<Void> deleteAsync(int exportId, RequestOptions options) {
-        return httpClient.deleteAsync("/api/projects/" + projectId + "/exports/" + exportId + "/", Void.class);
+        return httpClient.deleteAsync("/api/projects/" + projectId + "/exports/" + exportId, Void.class);
     }
     
     /**
@@ -212,7 +204,7 @@ public class ProjectExportsClient {
      * @return the export data as bytes
      */
     public byte[] download(int exportId, ExportDownloadOptions downloadOptions, RequestOptions requestOptions) {
-        String path = "/api/projects/" + projectId + "/exports/" + exportId + "/download/";
+        String path = "/api/projects/" + projectId + "/exports/" + exportId + "/download";
         if (downloadOptions != null) {
             path += buildDownloadQueryString(downloadOptions);
         }
@@ -239,7 +231,7 @@ public class ProjectExportsClient {
      * @return a CompletableFuture containing the export data as bytes
      */
     public CompletableFuture<byte[]> downloadAsync(int exportId, ExportDownloadOptions downloadOptions, RequestOptions requestOptions) {
-        String path = "/api/projects/" + projectId + "/exports/" + exportId + "/download/";
+        String path = "/api/projects/" + projectId + "/exports/" + exportId + "/download";
         if (downloadOptions != null) {
             path += buildDownloadQueryString(downloadOptions);
         }

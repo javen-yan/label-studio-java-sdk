@@ -8,7 +8,6 @@ import io.labelstudio.sdk.client.ProjectCreateRequest;
 import io.labelstudio.sdk.client.ProjectsListOptions;
 import io.labelstudio.sdk.client.TaskCreateRequest;
 import io.labelstudio.sdk.core.ApiError;
-import io.labelstudio.sdk.core.LabelStudioEnvironment;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.models.Annotation;
 import io.labelstudio.sdk.models.Export;
@@ -20,6 +19,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Quick start example demonstrating basic Label Studio SDK usage.
@@ -33,6 +34,8 @@ import java.util.Map;
  * </ol>
  */
 public class QuickStartExample {
+
+    private static final Logger logger = LoggerFactory.getLogger(QuickStartExample.class);
     
     /**
      * Helper method to create a map with a single key-value pair (Java 8 compatible)
@@ -45,21 +48,64 @@ public class QuickStartExample {
     
     public static void main(String[] args) {
         try {
-            // Create Label Studio client
-            LabelStudio client = LabelStudio.builder()
-                    .environment(LabelStudioEnvironment.DEFAULT) // http://localhost:8080
-                    .apiKey(System.getenv("LABEL_STUDIO_API_KEY")) // Set this environment variable
-                    .build();
+            logger.info("=== Label Studio Java SDK Quick Start Example ===\n");
             
-            System.out.println("=== Label Studio Java SDK Quick Start Example ===\n");
+            LabelStudio client = null;
+
+            String baseUrl = System.getenv("LABEL_STUDIO_BASE_URL");
+            
+            // ============================================================
+            // 方式1: 直接使用 API Key 初始化客户端
+            // ============================================================
+            logger.info("方式1: 使用 API Key 初始化客户端");
+            String apiKey = System.getenv("LABEL_STUDIO_API_KEY");
+            if (apiKey != null && !apiKey.trim().isEmpty()) {
+                LabelStudio client1 = LabelStudio.builder()
+                        .baseUrl(baseUrl)
+                        .apiKey(apiKey)
+                        .build();
+                logger.info("   ✓ 客户端已使用 API Key 初始化");
+                // 如果方式2不可用，则使用方式1
+                if (client == null) {
+                    client = client1;
+                }
+            } else {
+                logger.warn("   跳过方式1: 未设置 LABEL_STUDIO_API_KEY 环境变量");
+            }
+            logger.info("");
+            
+            // ============================================================
+            // 方式2: 使用登录方式直接构建客户端
+            // ============================================================
+            logger.info("方式2: 使用登录方式直接构建客户端");
+            String email = System.getenv("LABEL_STUDIO_EMAIL");
+            String password = System.getenv("LABEL_STUDIO_PASSWORD");
+            if (email != null && password != null) {
+                // 直接使用 login 方法创建客户端（内部会自动处理登录和 token）
+                client = LabelStudio.login(
+                        baseUrl,
+                        email,
+                        password
+                );
+                logger.info("   ✓ 登录成功，客户端已创建（优先使用方式2）");
+            } else {
+                logger.warn("   跳过方式2: 请设置 LABEL_STUDIO_EMAIL 和 LABEL_STUDIO_PASSWORD 环境变量");
+            }
+            logger.info("");
+            
+            // 检查是否成功初始化了客户端
+            if (client == null) {
+                logger.error("错误: 无法初始化客户端。请使用方式1（设置 LABEL_STUDIO_API_KEY）或方式2（设置 LABEL_STUDIO_EMAIL 和 LABEL_STUDIO_PASSWORD）");
+                return;
+            }
             
             // 1. Check current user
-            System.out.println("1. Getting current user info...");
+            logger.info("1. Getting current user info...");
             UserSimple currentUser = client.users().whoami();
-            System.out.println("   Current user: " + currentUser.getUsername() + " (" + currentUser.getEmail() + ")\n");
+            logger.info("   Current user: " + currentUser.getUsername() + " (" + currentUser.getEmail() + ")\n");
             
             // 2. Create a project
-            System.out.println("2. Creating a new project...");
+            logger.info("2. Creating a new project...");
             String labelConfig = "<View>\n" +
                     "  <Header value=\"Choose text sentiment:\"/>\n" +
                     "  <Text name=\"text\" value=\"$text\"/>\n" +
@@ -80,19 +126,19 @@ public class QuickStartExample {
                     .build();
             
             Project project = client.projects().create(projectRequest);
-            System.out.println("   Created project: " + project.getTitle() + " (ID: " + project.getId() + ")\n");
+            logger.info("Created project: " + project.getTitle() + " (ID: " + project.getId() + ")");
             
             // 3. Validate label configuration
-            System.out.println("3. Validating label configuration...");
+            logger.info("3. Validating label configuration...");
             LabelConfigValidationResult validation = client.projects().validateLabelConfig(project.getId(), labelConfig);
             if (validation.isValid()) {
-                System.out.println("   ✓ Label configuration is valid\n");
+                logger.info("   ✓ Label configuration is valid\n");
             } else {
-                System.out.println("   ✗ Label configuration has errors: " + validation.getErrors() + "\n");
+                logger.info("   ✗ Label configuration has errors: " + validation.getErrors() + "\n");
             }
-            
+                    
             // 4. Import tasks
-            System.out.println("4. Creating tasks...");
+            logger.info("4. Creating tasks...");
             List<Map<String, Object>> taskData = Arrays.asList(
                     createMap("text", "I absolutely love this new product! It's amazing!"),
                     createMap("text", "This is the worst thing I've ever bought. Terrible quality."),
@@ -109,38 +155,36 @@ public class QuickStartExample {
                         .build();
                 
                 Task task = client.tasks().create(project.getId(), taskRequest);
-                System.out.println("   Created task " + (i + 1) + ": " + task.getData().get("text"));
+                logger.info("   Created task " + (i + 1) + ": " + task.getData().get("text"));
             }
-            System.out.println();
             
             // 5. List tasks
-            System.out.println("5. Listing all tasks in the project...");
+            logger.info("5. Listing all tasks in the project...");
             Pagination<Task> tasks = client.tasks().list(project.getId());
-            System.out.println("   Found " + tasks.getCount() + " tasks:");
+            logger.info("   Found " + tasks.getCount() + " tasks:");
             for (Task task : tasks.getResults()) {
-                System.out.println("   - Task " + task.getId() + ": " + task.getData().get("text"));
-                System.out.println("     Labeled: " + (task.getIsLabeled() != null ? task.getIsLabeled() : false));
+                logger.info("   - Task " + task.getId() + ": " + task.getData().get("text"));
+                logger.info("     Labeled: " + (task.getIsLabeled() != null ? task.getIsLabeled() : false));
             }
-            System.out.println();
             
             // 5.1 Demonstrate advanced project listing with filters
-            System.out.println("5.1 Demonstrating advanced project listing...");
+            logger.info("5.1 Demonstrating advanced project listing...");
             Pagination<Project> filteredProjects = client.projects().list(
                 ProjectsListOptions.builder()
                     .orderByCreatedAtDesc()
                     .pageSize(5)
-                    .include("task_number,finished_task_number")
+                    .include("title,task_number,finished_task_number")  // Include title to ensure it's returned
                     .build()
             );
-            System.out.println("   Recent projects (max 5):");
+            logger.info("   Recent projects (max 5):");
             for (Project p : filteredProjects.getResults()) {
-                System.out.println("   - " + p.getTitle() + " (Tasks: " + p.getTaskNumber() + ", Finished: " + p.getFinishedTaskNumber() + ")");
+                String title = p.getTitle() != null ? p.getTitle() : "N/A";
+                logger.info("   - " + title + " (Tasks: " + p.getTaskNumber() + ", Finished: " + p.getFinishedTaskNumber() + ")");
             }
-            System.out.println();
             
             // 6. Create an annotation for the first task
             if (!tasks.getResults().isEmpty()) {
-                System.out.println("6. Creating an annotation for the first task...");
+                logger.info("6. Creating an annotation for the first task...");
                 Task firstTask = tasks.getResults().get(0);
                 
                 Map<String, Object> annotationMap = new HashMap<>();
@@ -161,12 +205,12 @@ public class QuickStartExample {
                         .build();
                 
                 Annotation annotation = client.annotations().create(annotationRequest);
-                System.out.println("   Created annotation " + annotation.getId() + " for task " + firstTask.getId());
-                System.out.println("   Annotation result: " + annotation.getResult() + "\n");
+                logger.info("   Created annotation " + annotation.getId() + " for task " + firstTask.getId());
+                logger.info("   Annotation result: " + annotation.getResult() + "\n");
             }
             
             // 7. Demonstrate export functionality
-            System.out.println("7. Creating and managing exports...");
+            logger.info("7. Creating and managing exports...");
             Export export = client.projects().exports(project.getId()).create(
                 ExportCreateRequest.builder()
                     .title("SDK Example Export")
@@ -174,40 +218,94 @@ public class QuickStartExample {
                     .downloadAllTasks(true)
                     .build()
             );
-            System.out.println("   Created export: " + export.getTitle() + " (ID: " + export.getId() + ")");
-            System.out.println("   Export status: " + export.getStatus());
-            System.out.println("   Export type: " + export.getExportType());
+            logger.info("   Created export: " + export.getTitle() + " (ID: " + export.getId() + ")");
+            logger.info("   Export status: " + export.getStatus());
+            logger.info("   Export type: " + export.getExportType());
             
             // List all exports for the project
-            Pagination<Export> exports = client.projects().exports(project.getId()).list();
-            System.out.println("   Total exports for project: " + exports.getCount());
-            System.out.println();
+            List<Export> exports = client.projects().exports(project.getId()).list(null);
+            logger.info("   Total exports for project: " + exports.size());
+            for (Export e : exports) {
+                logger.info("   - " + e.getTitle() + " (ID: " + e.getId() + ")");
+                logger.info("     Status: " + e.getStatus());
+                logger.info("     Type: " + e.getExportType());
+            }
             
             // 8. List projects to verify everything was created
-            System.out.println("8. Listing all projects...");
+            logger.info("8. Listing all projects...");
             Pagination<Project> projects = client.projects().list();
-            System.out.println("   Total projects: " + projects.getCount());
+            logger.info("   Total projects: " + projects.getCount());
             for (Project p : projects.getResults()) {
-                System.out.println("   - " + p.getTitle() + " (ID: " + p.getId() + ", Tasks: " + p.getTaskNumber() + ")");
+                logger.info("   - " + p.getTitle() + " (ID: " + p.getId() + ", Tasks: " + p.getTaskNumber() + ")");
             }
-            System.out.println();
             
-            // 9. Cleanup (optional - remove the created project)
-            System.out.println("9. Cleaning up...");
-            System.out.println("   To clean up, you can delete the project with ID: " + project.getId());
-            System.out.println("   Uncomment the line below to automatically delete the project:");
-            // client.projects().delete(project.getId());
-            // System.out.println("   ✓ Project deleted");
+            // 9. Cleanup - delete all created resources
+            logger.info("9. Cleaning up created resources...");
             
-            System.out.println("\n=== Example completed successfully! ===");
+            try {
+                // Delete exports
+                List<Export> exportsToDelete = client.projects().exports(project.getId()).list(null);
+                for (Export e : exportsToDelete) {
+                    try {
+                        client.projects().exports(project.getId()).delete(e.getId());
+                        logger.info("   ✓ Deleted export: " + e.getTitle() + " (ID: " + e.getId() + ")");
+                    } catch (Exception ex) {
+                        logger.warn("   ✗ Failed to delete export " + e.getId() + ": " + ex.getMessage());
+                    }
+                }
+                
+                // Delete annotations
+                if (!tasks.getResults().isEmpty()) {
+                    for (Task task : tasks.getResults()) {
+                        // Get annotations for this task
+                        try {
+                            Pagination<Annotation> annotations = client.annotations().list();
+                            for (Annotation ann : annotations.getResults()) {
+                                if (ann.getTask() != null && ann.getTask().equals(task.getId())) {
+                                    try {
+                                        client.annotations().delete(ann.getId());
+                                        logger.info("   ✓ Deleted annotation " + ann.getId() + " for task " + task.getId());
+                                    } catch (Exception ex) {
+                                        logger.warn("   ✗ Failed to delete annotation " + ann.getId() + ": " + ex.getMessage());
+                                    }
+                                }
+                            }
+                        } catch (Exception ex) {
+                            logger.debug("   Could not list annotations: " + ex.getMessage());
+                        }
+                    }
+                }
+                
+                // Delete tasks
+                Pagination<Task> tasksToDelete = client.tasks().list(project.getId());
+                for (Task task : tasksToDelete.getResults()) {
+                    try {
+                        client.tasks().delete(task.getId());
+                        logger.info("   ✓ Deleted task " + task.getId());
+                    } catch (Exception ex) {
+                        logger.warn("   ✗ Failed to delete task " + task.getId() + ": " + ex.getMessage());
+                    }
+                }
+                
+                // Finally, delete the project
+                client.projects().delete(project.getId());
+                logger.info("   ✓ Deleted project: " + project.getTitle() + " (ID: " + project.getId() + ")");
+                logger.info("\n=== Cleanup completed successfully! ===");
+                
+            } catch (Exception cleanupEx) {
+                logger.warn("   Some cleanup operations failed: " + cleanupEx.getMessage());
+                logger.info("\n=== Example completed (with cleanup warnings) ===");
+            }
+            
+            logger.info("\n=== Example completed successfully! ===");
             
         } catch (ApiError e) {
-            System.err.println("API Error: " + e.getMessage());
-            System.err.println("Status Code: " + e.getStatusCode());
-            System.err.println("Response Body: " + e.getBody());
+            logger.error("API Error: " + e.getMessage());
+            logger.error("Status Code: " + e.getStatusCode());
+            logger.error("Response Body: " + e.getBody());
             e.printStackTrace();
         } catch (Exception e) {
-            System.err.println("Unexpected error: " + e.getMessage());
+            logger.error("Unexpected error: " + e.getMessage());
             e.printStackTrace();
         }
     }

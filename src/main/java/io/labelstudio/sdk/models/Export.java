@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -53,6 +55,46 @@ public class Export {
     
     @JsonProperty("project")
     private Integer project;
+    
+    @JsonProperty("md5")
+    private String md5;
+    
+    @JsonProperty("converted_formats")
+    private List<ConvertedFormat> convertedFormats;
+    
+    @JsonProperty("counters")
+    private Map<String, Object> counters;
+    
+    /**
+     * Represents a converted format in an export.
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class ConvertedFormat {
+        @JsonProperty("id")
+        private Integer id;
+        
+        @JsonProperty("export_type")
+        private String exportType;
+        
+        public ConvertedFormat() {
+        }
+        
+        public Integer getId() {
+            return id;
+        }
+        
+        public void setId(Integer id) {
+            this.id = id;
+        }
+        
+        public String getExportType() {
+            return exportType;
+        }
+        
+        public void setExportType(String exportType) {
+            this.exportType = exportType;
+        }
+    }
     
     /**
      * Default constructor.
@@ -310,6 +352,60 @@ public class Export {
      */
     public void setProject(Integer project) {
         this.project = project;
+    }
+    
+    /**
+     * Gets the MD5 hash of the export file.
+     * 
+     * @return the MD5 hash
+     */
+    public String getMd5() {
+        return md5;
+    }
+    
+    /**
+     * Sets the MD5 hash of the export file.
+     * 
+     * @param md5 the MD5 hash
+     */
+    public void setMd5(String md5) {
+        this.md5 = md5;
+    }
+    
+    /**
+     * Gets the list of converted formats.
+     * 
+     * @return the converted formats
+     */
+    public List<ConvertedFormat> getConvertedFormats() {
+        return convertedFormats;
+    }
+    
+    /**
+     * Sets the list of converted formats.
+     * 
+     * @param convertedFormats the converted formats
+     */
+    public void setConvertedFormats(List<ConvertedFormat> convertedFormats) {
+        this.convertedFormats = convertedFormats;
+    }
+    
+    /**
+     * Gets the counters map.
+     * 
+     * @return the counters
+     */
+    public Map<String, Object> getCounters() {
+        return counters;
+    }
+    
+    /**
+     * Sets the counters map.
+     * 
+     * @param counters the counters
+     */
+    public void setCounters(Map<String, Object> counters) {
+        this.counters = counters;
     }
     
     /**

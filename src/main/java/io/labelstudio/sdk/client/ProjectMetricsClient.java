@@ -1,7 +1,6 @@
 package io.labelstudio.sdk.client;
 
 import io.labelstudio.sdk.core.HttpClient;
-import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.models.ProjectMetrics;
 
 import java.util.concurrent.CompletableFuture;
