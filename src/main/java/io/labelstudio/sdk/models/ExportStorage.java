@@ -1,6 +1,11 @@
 package io.labelstudio.sdk.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -8,6 +13,11 @@ import java.util.Map;
 /**
  * Represents an export storage configuration in Label Studio.
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode  
 public class ExportStorage {
     
     @JsonProperty("id")
@@ -99,248 +109,4 @@ public class ExportStorage {
     
     @JsonProperty("meta")
     private Map<String, Object> meta;
-    
-    // Constructors
-    public ExportStorage() {}
-    
-    // Getters and Setters
-    public Integer getId() {
-        return id;
-    }
-    
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    
-    public String getType() {
-        return type;
-    }
-    
-    public void setType(String type) {
-        this.type = type;
-    }
-    
-    public String getTitle() {
-        return title;
-    }
-    
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    
-    public String getDescription() {
-        return description;
-    }
-    
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    
-    public Integer getProjectId() {
-        return projectId;
-    }
-    
-    public void setProjectId(Integer projectId) {
-        this.projectId = projectId;
-    }
-    
-    public String getBucket() {
-        return bucket;
-    }
-    
-    public void setBucket(String bucket) {
-        this.bucket = bucket;
-    }
-    
-    public String getPrefix() {
-        return prefix;
-    }
-    
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-    
-    public String getAwsAccessKeyId() {
-        return awsAccessKeyId;
-    }
-    
-    public void setAwsAccessKeyId(String awsAccessKeyId) {
-        this.awsAccessKeyId = awsAccessKeyId;
-    }
-    
-    public String getAwsSecretAccessKey() {
-        return awsSecretAccessKey;
-    }
-    
-    public void setAwsSecretAccessKey(String awsSecretAccessKey) {
-        this.awsSecretAccessKey = awsSecretAccessKey;
-    }
-    
-    public String getAwsSessionToken() {
-        return awsSessionToken;
-    }
-    
-    public void setAwsSessionToken(String awsSessionToken) {
-        this.awsSessionToken = awsSessionToken;
-    }
-    
-    public String getRegionName() {
-        return regionName;
-    }
-    
-    public void setRegionName(String regionName) {
-        this.regionName = regionName;
-    }
-    
-    public String getS3Endpoint() {
-        return s3Endpoint;
-    }
-    
-    public void setS3Endpoint(String s3Endpoint) {
-        this.s3Endpoint = s3Endpoint;
-    }
-    
-    public String getGoogleApplicationCredentials() {
-        return googleApplicationCredentials;
-    }
-    
-    public void setGoogleApplicationCredentials(String googleApplicationCredentials) {
-        this.googleApplicationCredentials = googleApplicationCredentials;
-    }
-    
-    public String getAzureAccountName() {
-        return azureAccountName;
-    }
-    
-    public void setAzureAccountName(String azureAccountName) {
-        this.azureAccountName = azureAccountName;
-    }
-    
-    public String getAzureAccountKey() {
-        return azureAccountKey;
-    }
-    
-    public void setAzureAccountKey(String azureAccountKey) {
-        this.azureAccountKey = azureAccountKey;
-    }
-    
-    public String getAzureConnectionString() {
-        return azureConnectionString;
-    }
-    
-    public void setAzureConnectionString(String azureConnectionString) {
-        this.azureConnectionString = azureConnectionString;
-    }
-    
-    public String getPath() {
-        return path;
-    }
-    
-    public void setPath(String path) {
-        this.path = path;
-    }
-    
-    public String getHost() {
-        return host;
-    }
-    
-    public void setHost(String host) {
-        this.host = host;
-    }
-    
-    public Integer getPort() {
-        return port;
-    }
-    
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-    
-    public String getUser() {
-        return user;
-    }
-    
-    public void setUser(String user) {
-        this.user = user;
-    }
-    
-    public String getPassword() {
-        return password;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-    public String getPathSeparator() {
-        return pathSeparator;
-    }
-    
-    public void setPathSeparator(String pathSeparator) {
-        this.pathSeparator = pathSeparator;
-    }
-    
-    public Boolean getCanDeleteObjects() {
-        return canDeleteObjects;
-    }
-    
-    public void setCanDeleteObjects(Boolean canDeleteObjects) {
-        this.canDeleteObjects = canDeleteObjects;
-    }
-    
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-    
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-    
-    public LocalDateTime getLastSync() {
-        return lastSync;
-    }
-    
-    public void setLastSync(LocalDateTime lastSync) {
-        this.lastSync = lastSync;
-    }
-    
-    public Integer getLastSyncCount() {
-        return lastSyncCount;
-    }
-    
-    public void setLastSyncCount(Integer lastSyncCount) {
-        this.lastSyncCount = lastSyncCount;
-    }
-    
-    public String getLastSyncJob() {
-        return lastSyncJob;
-    }
-    
-    public void setLastSyncJob(String lastSyncJob) {
-        this.lastSyncJob = lastSyncJob;
-    }
-    
-    public String getStatus() {
-        return status;
-    }
-    
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    
-    public String getTraceback() {
-        return traceback;
-    }
-    
-    public void setTraceback(String traceback) {
-        this.traceback = traceback;
-    }
-    
-    public Map<String, Object> getMeta() {
-        return meta;
-    }
-    
-    public void setMeta(Map<String, Object> meta) {
-        this.meta = meta;
-    }
 }

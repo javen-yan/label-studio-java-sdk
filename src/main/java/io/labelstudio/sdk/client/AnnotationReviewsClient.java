@@ -3,6 +3,8 @@ package io.labelstudio.sdk.client;
 import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.models.AnnotationReview;
+import io.labelstudio.sdk.vo.ReviewCreateRequest;
+import io.labelstudio.sdk.vo.ReviewUpdateRequest;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -179,7 +181,7 @@ public class AnnotationReviewsClient {
     public AnnotationReview accept(int annotationId, String comment) {
         return create(ReviewCreateRequest.builder()
             .annotationId(annotationId)
-            .accept()
+            .action("accept")
             .comment(comment)
             .build());
     }
@@ -194,7 +196,7 @@ public class AnnotationReviewsClient {
     public CompletableFuture<AnnotationReview> acceptAsync(int annotationId, String comment) {
         return createAsync(ReviewCreateRequest.builder()
             .annotationId(annotationId)
-            .accept()
+            .action("accept")
             .comment(comment)
             .build());
     }
@@ -209,7 +211,7 @@ public class AnnotationReviewsClient {
     public AnnotationReview reject(int annotationId, String comment) {
         return create(ReviewCreateRequest.builder()
             .annotationId(annotationId)
-            .reject()
+            .action("reject")
             .comment(comment)
             .build());
     }
@@ -224,7 +226,7 @@ public class AnnotationReviewsClient {
     public CompletableFuture<AnnotationReview> rejectAsync(int annotationId, String comment) {
         return createAsync(ReviewCreateRequest.builder()
             .annotationId(annotationId)
-            .reject()
+            .action("reject")
             .comment(comment)
             .build());
     }

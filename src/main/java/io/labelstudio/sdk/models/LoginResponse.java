@@ -2,12 +2,22 @@ package io.labelstudio.sdk.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Represents the response from a login request.
  */
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LoginResponse {
     
@@ -19,79 +29,6 @@ public class LoginResponse {
     
     @JsonProperty("user")
     private User user;
-    
-    /**
-     * Default constructor.
-     */
-    public LoginResponse() {
-    }
-    
-    /**
-     * Gets the detail message.
-     * 
-     * @return the detail message
-     */
-    public String getDetail() {
-        return detail;
-    }
-    
-    /**
-     * Sets the detail message.
-     * 
-     * @param detail the detail message
-     */
-    public void setDetail(String detail) {
-        this.detail = detail;
-    }
-    
-    /**
-     * Gets the authentication token.
-     * 
-     * @return the authentication token
-     */
-    public String getToken() {
-        return token;
-    }
-    
-    /**
-     * Sets the authentication token.
-     * 
-     * @param token the authentication token
-     */
-    public void setToken(String token) {
-        this.token = token;
-    }
-    
-    /**
-     * Gets the user object.
-     * 
-     * @return the user object
-     */
-    public User getUser() {
-        return user;
-    }
-    
-    /**
-     * Sets the user object.
-     * 
-     * @param user the user object
-     */
-    public void setUser(User user) {
-        this.user = user;
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LoginResponse that = (LoginResponse) o;
-        return Objects.equals(token, that.token);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(token);
-    }
     
     @Override
     public String toString() {

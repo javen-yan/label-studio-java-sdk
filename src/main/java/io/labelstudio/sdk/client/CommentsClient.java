@@ -2,7 +2,10 @@ package io.labelstudio.sdk.client;
 
 import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
+import io.labelstudio.sdk.core.RequestOptions;
 import io.labelstudio.sdk.models.Comment;
+import io.labelstudio.sdk.vo.CommentCreateRequest;
+import io.labelstudio.sdk.vo.CommentUpdateRequest;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -207,5 +210,43 @@ public class CommentsClient {
      */
     public CompletableFuture<Pagination<Comment>> listByProjectAsync(int projectId) {
         return httpClient.getPaginatedAsync("/api/comments/?project=" + projectId, Comment.class);
+    }
+    
+    /**
+     * Exports comments to CSV.
+     * 
+     * @return the CSV content as byte array
+     */
+    public byte[] exportToCsv() {
+        return exportToCsv(null);
+    }
+    
+    /**
+     * Exports comments to CSV with options.
+     * 
+     * @param options request options
+     * @return the CSV content as byte array
+     */
+    public byte[] exportToCsv(RequestOptions options) {
+        return httpClient.downloadFile("/api/comments/export/");
+    }
+    
+    /**
+     * Exports comments to CSV asynchronously.
+     * 
+     * @return a CompletableFuture containing the CSV content as byte array
+     */
+    public CompletableFuture<byte[]> exportToCsvAsync() {
+        return exportToCsvAsync(null);
+    }
+    
+    /**
+     * Exports comments to CSV with options asynchronously.
+     * 
+     * @param options request options
+     * @return a CompletableFuture containing the CSV content as byte array
+     */
+    public CompletableFuture<byte[]> exportToCsvAsync(RequestOptions options) {
+        return httpClient.downloadFileAsync("/api/comments/export/");
     }
 }

@@ -142,4 +142,43 @@ public class AnnotationHistoryClient {
     public CompletableFuture<AnnotationHistory> restoreAsync(int historyId) {
         return httpClient.postAsync("/api/annotation-history/" + historyId + "/restore/", null, AnnotationHistory.class);
     }
+    
+    /**
+     * Lists annotation history for a specific project.
+     * 
+     * @param projectId the project ID
+     * @return a paginated list of history records for the project
+     */
+    public Pagination<AnnotationHistory> listByProject(int projectId) {
+        return httpClient.getPaginated("/api/projects/" + projectId + "/annotation-history/", AnnotationHistory.class);
+    }
+    
+    /**
+     * Lists annotation history for a specific project asynchronously.
+     * 
+     * @param projectId the project ID
+     * @return a CompletableFuture containing a paginated list of history records for the project
+     */
+    public CompletableFuture<Pagination<AnnotationHistory>> listByProjectAsync(int projectId) {
+        return httpClient.getPaginatedAsync("/api/projects/" + projectId + "/annotation-history/", AnnotationHistory.class);
+    }
+    
+    /**
+     * Deletes annotation history items.
+     * 
+     * @param historyId the history record ID to delete
+     */
+    public void delete(int historyId) {
+        httpClient.delete("/api/annotation-history/" + historyId + "/");
+    }
+    
+    /**
+     * Deletes annotation history items asynchronously.
+     * 
+     * @param historyId the history record ID to delete
+     * @return a CompletableFuture that completes when the history record is deleted
+     */
+    public CompletableFuture<Void> deleteAsync(int historyId) {
+        return httpClient.deleteAsync("/api/annotation-history/" + historyId + "/");
+    }
 }

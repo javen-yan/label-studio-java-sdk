@@ -3,6 +3,8 @@ package io.labelstudio.sdk.client;
 import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.models.ProjectPause;
+import io.labelstudio.sdk.vo.PauseCreateRequest;
+import io.labelstudio.sdk.vo.PauseUpdateRequest;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -176,7 +178,10 @@ public class ProjectPausesClient {
     public ProjectPause resume() {
         ProjectPause currentPause = getCurrentPause();
         if (currentPause != null && currentPause.isActive()) {
-            return update(currentPause.getId(), PauseUpdateRequest.builder().resume().build());
+            return update(currentPause.getId(), PauseUpdateRequest.builder()
+                    .status("resumed")
+                    .resumedAt(java.time.OffsetDateTime.now())
+                    .build());
         }
         return null;
     }
@@ -189,7 +194,10 @@ public class ProjectPausesClient {
     public CompletableFuture<ProjectPause> resumeAsync() {
         return getCurrentPauseAsync().thenCompose(currentPause -> {
             if (currentPause != null && currentPause.isActive()) {
-                return updateAsync(currentPause.getId(), PauseUpdateRequest.builder().resume().build());
+                return updateAsync(currentPause.getId(), PauseUpdateRequest.builder()
+                        .status("resumed")
+                        .resumedAt(java.time.OffsetDateTime.now())
+                        .build());
             }
             return CompletableFuture.completedFuture(null);
         });

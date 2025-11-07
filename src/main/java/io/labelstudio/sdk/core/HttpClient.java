@@ -106,8 +106,6 @@ public class HttpClient {
                 String authHeader = headers.get("Authorization");
                 if (authHeader != null) {
                     logger.debug("Interceptor: Final Authorization header present (length: {})", authHeader.length());
-                } else {
-                    logger.warn("Interceptor: Authorization header missing in final request!");
                 }
                 
                 return chain.proceed(newRequest);
@@ -500,9 +498,6 @@ public class HttpClient {
                     logger.debug("  {}: {}", headerName, headerValue);
                 }
             }
-        } else {
-            logger.warn("HTTP {} {} - No Authorization header found in request!", method, url);
-            logger.warn("Available headers: {}", requestHeaders);
         }
         
         return request;

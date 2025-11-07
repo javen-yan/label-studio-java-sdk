@@ -1,7 +1,7 @@
 package io.labelstudio.sdk;
 
-import io.labelstudio.sdk.client.MemberCreateRequest;
-import io.labelstudio.sdk.client.MemberUpdateRequest;
+import io.labelstudio.sdk.vo.MemberCreateRequest;
+import io.labelstudio.sdk.vo.MemberUpdateRequest;
 import io.labelstudio.sdk.client.ProjectMembersClient;
 import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
@@ -53,8 +53,8 @@ public class ProjectMembersTest {
         // Given
         MemberCreateRequest request = MemberCreateRequest.builder()
                 .userId(456)
-                .annotator()
-                .enabled()
+                .role("annotator")
+                .enabled(true)
                 .build();
         ProjectMember expectedMember = new ProjectMember();
         when(httpClient.post(eq("/api/projects/123/members/"), eq(request), eq(ProjectMember.class)))
@@ -89,7 +89,7 @@ public class ProjectMembersTest {
         // Given
         int memberId = 789;
         MemberUpdateRequest request = MemberUpdateRequest.builder()
-                .reviewer()
+                .role("reviewer")
                 .build();
         ProjectMember expectedMember = new ProjectMember();
         when(httpClient.put(eq("/api/projects/123/members/789/"), eq(request), eq(ProjectMember.class)))
@@ -120,8 +120,8 @@ public class ProjectMembersTest {
         // When
         MemberCreateRequest request = MemberCreateRequest.builder()
                 .userId(123)
-                .annotator()
-                .enabled()
+                .role("annotator")
+                .enabled(true)
                 .build();
         
         // Then
@@ -134,8 +134,8 @@ public class ProjectMembersTest {
     public void testMemberUpdateRequestBuilder() {
         // When
         MemberUpdateRequest request = MemberUpdateRequest.builder()
-                .manager()
-                .disabled()
+                .role("manager")
+                .enabled(false)
                 .build();
         
         // Then

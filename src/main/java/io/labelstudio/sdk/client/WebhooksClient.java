@@ -4,6 +4,8 @@ import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.core.RequestOptions;
 import io.labelstudio.sdk.models.Webhook;
+import io.labelstudio.sdk.vo.WebhookCreateRequest;
+import io.labelstudio.sdk.vo.WebhookUpdateRequest;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -335,5 +337,43 @@ public class WebhooksClient {
      */
     public CompletableFuture<Webhook> validateAsync(WebhookCreateRequest request, RequestOptions requestOptions) {
         return httpClient.postAsync("/api/webhooks/validate/", request, Webhook.class);
+    }
+    
+    /**
+     * Gets all webhook actions.
+     * 
+     * @return the webhook actions information
+     */
+    public Object getInfo() {
+        return getInfo(null);
+    }
+    
+    /**
+     * Gets all webhook actions with options.
+     * 
+     * @param requestOptions request options
+     * @return the webhook actions information
+     */
+    public Object getInfo(RequestOptions requestOptions) {
+        return httpClient.get("/api/webhooks/info/", Object.class);
+    }
+    
+    /**
+     * Gets all webhook actions asynchronously.
+     * 
+     * @return a CompletableFuture containing the webhook actions information
+     */
+    public CompletableFuture<Object> getInfoAsync() {
+        return getInfoAsync(null);
+    }
+    
+    /**
+     * Gets all webhook actions with options asynchronously.
+     * 
+     * @param requestOptions request options
+     * @return a CompletableFuture containing the webhook actions information
+     */
+    public CompletableFuture<Object> getInfoAsync(RequestOptions requestOptions) {
+        return httpClient.getAsync("/api/webhooks/info/", Object.class);
     }
 }

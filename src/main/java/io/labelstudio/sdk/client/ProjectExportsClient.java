@@ -3,8 +3,11 @@ package io.labelstudio.sdk.client;
 import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.RequestOptions;
 import io.labelstudio.sdk.models.Export;
+import io.labelstudio.sdk.vo.ExportCreateRequest;
+import io.labelstudio.sdk.vo.ExportDownloadOptions;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -272,5 +275,147 @@ public class ProjectExportsClient {
         }
         
         return hasParam ? sb.toString() : "";
+    }
+    
+    /**
+     * Easy export of tasks and annotations (synchronous download).
+     * 
+     * @param downloadOptions export download options
+     * @return the export data as bytes
+     */
+    public byte[] downloadSync(ExportDownloadOptions downloadOptions) {
+        return downloadSync(downloadOptions, null);
+    }
+    
+    /**
+     * Easy export of tasks and annotations (synchronous download) with request options.
+     * 
+     * @param downloadOptions export download options
+     * @param requestOptions request options
+     * @return the export data as bytes
+     */
+    public byte[] downloadSync(ExportDownloadOptions downloadOptions, RequestOptions requestOptions) {
+        String path = "/api/projects/" + projectId + "/exports/download-sync/";
+        if (downloadOptions != null) {
+            path += buildDownloadQueryString(downloadOptions);
+        }
+        return httpClient.get(path, byte[].class);
+    }
+    
+    /**
+     * Easy export of tasks and annotations (synchronous download) asynchronously.
+     * 
+     * @param downloadOptions export download options
+     * @return a CompletableFuture containing the export data as bytes
+     */
+    public CompletableFuture<byte[]> downloadSyncAsync(ExportDownloadOptions downloadOptions) {
+        return downloadSyncAsync(downloadOptions, null);
+    }
+    
+    /**
+     * Easy export of tasks and annotations (synchronous download) with request options asynchronously.
+     * 
+     * @param downloadOptions export download options
+     * @param requestOptions request options
+     * @return a CompletableFuture containing the export data as bytes
+     */
+    public CompletableFuture<byte[]> downloadSyncAsync(ExportDownloadOptions downloadOptions, RequestOptions requestOptions) {
+        String path = "/api/projects/" + projectId + "/exports/download-sync/";
+        if (downloadOptions != null) {
+            path += buildDownloadQueryString(downloadOptions);
+        }
+        return httpClient.getAsync(path, byte[].class);
+    }
+    
+    /**
+     * Gets available export formats.
+     * 
+     * @return a list of available export formats
+     */
+    public List<String> getFormats() {
+        return getFormats(null);
+    }
+    
+    /**
+     * Gets available export formats with options.
+     * 
+     * @param options request options
+     * @return a list of available export formats
+     */
+    public List<String> getFormats(RequestOptions options) {
+        return httpClient.get("/api/projects/" + projectId + "/exports/formats/", 
+                httpClient.getObjectMapper().getTypeFactory()
+                        .constructCollectionType(List.class, String.class));
+    }
+    
+    /**
+     * Gets available export formats asynchronously.
+     * 
+     * @return a CompletableFuture containing a list of available export formats
+     */
+    public CompletableFuture<List<String>> getFormatsAsync() {
+        return getFormatsAsync(null);
+    }
+    
+    /**
+     * Gets available export formats with options asynchronously.
+     * 
+     * @param options request options
+     * @return a CompletableFuture containing a list of available export formats
+     */
+    public CompletableFuture<List<String>> getFormatsAsync(RequestOptions options) {
+        return httpClient.getAsync("/api/projects/" + projectId + "/exports/formats/", 
+                httpClient.getObjectMapper().getTypeFactory()
+                        .constructCollectionType(List.class, String.class));
+    }
+    
+    /**
+     * Converts an export to a different format.
+     * 
+     * @param exportId the export ID to convert
+     * @param targetFormat the target export format
+     * @return the converted export
+     */
+    public Export convert(int exportId, String targetFormat) {
+        return convert(exportId, targetFormat, null);
+    }
+    
+    /**
+     * Converts an export to a different format with options.
+     * 
+     * @param exportId the export ID to convert
+     * @param targetFormat the target export format
+     * @param options request options
+     * @return the converted export
+     */
+    public Export convert(int exportId, String targetFormat, RequestOptions options) {
+        Map<String, String> request = new java.util.HashMap<>();
+        request.put("export_type", targetFormat);
+        return httpClient.post("/api/projects/" + projectId + "/exports/" + exportId + "/convert/", request, Export.class);
+    }
+    
+    /**
+     * Converts an export to a different format asynchronously.
+     * 
+     * @param exportId the export ID to convert
+     * @param targetFormat the target export format
+     * @return a CompletableFuture containing the converted export
+     */
+    public CompletableFuture<Export> convertAsync(int exportId, String targetFormat) {
+        return convertAsync(exportId, targetFormat, null);
+    }
+    
+    /**
+     * Converts an export to a different format with options asynchronously.
+     * 
+     * @param exportId the export ID to convert
+     * @param targetFormat the target export format
+     * @param options request options
+     * @return a CompletableFuture containing the converted export
+     */
+    public CompletableFuture<Export> convertAsync(int exportId, String targetFormat, RequestOptions options) {
+        Map<String, String> request = new java.util.HashMap<>();
+        request.put("export_type", targetFormat);
+        return httpClient.postAsync("/api/projects/" + projectId + "/exports/" + exportId + "/convert/", request, Export.class);
     }
 }

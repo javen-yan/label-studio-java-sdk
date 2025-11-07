@@ -2,12 +2,22 @@ package io.labelstudio.sdk.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Objects;
 
 /**
  * Represents a simplified user object.
  */
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserSimple {
     
@@ -25,102 +35,6 @@ public class UserSimple {
     
     @JsonProperty("email")
     private String email;
-    
-    /**
-     * Default constructor.
-     */
-    public UserSimple() {
-    }
-    
-    /**
-     * Gets the user ID.
-     * 
-     * @return the user ID
-     */
-    public Integer getId() {
-        return id;
-    }
-    
-    /**
-     * Sets the user ID.
-     * 
-     * @param id the user ID
-     */
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    
-    /**
-     * Gets the first name.
-     * 
-     * @return the first name
-     */
-    public String getFirstName() {
-        return firstName;
-    }
-    
-    /**
-     * Sets the first name.
-     * 
-     * @param firstName the first name
-     */
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-    
-    /**
-     * Gets the last name.
-     * 
-     * @return the last name
-     */
-    public String getLastName() {
-        return lastName;
-    }
-    
-    /**
-     * Sets the last name.
-     * 
-     * @param lastName the last name
-     */
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-    
-    /**
-     * Gets the username.
-     * 
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-    
-    /**
-     * Sets the username.
-     * 
-     * @param username the username
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    
-    /**
-     * Gets the email.
-     * 
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
-    }
-    
-    /**
-     * Sets the email.
-     * 
-     * @param email the email
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
     
     /**
      * Gets the full name (first name + last name).

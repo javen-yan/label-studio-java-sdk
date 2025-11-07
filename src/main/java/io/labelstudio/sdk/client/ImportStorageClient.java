@@ -4,6 +4,8 @@ import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.core.RequestOptions;
 import io.labelstudio.sdk.models.ImportStorage;
+import io.labelstudio.sdk.vo.ImportStorageCreateRequest;
+import io.labelstudio.sdk.vo.ImportStorageUpdateRequest;
 
 import java.util.concurrent.CompletableFuture;
 

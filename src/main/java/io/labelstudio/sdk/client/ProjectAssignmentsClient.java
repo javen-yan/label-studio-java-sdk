@@ -3,6 +3,11 @@ package io.labelstudio.sdk.client;
 import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.models.Assignment;
+import io.labelstudio.sdk.vo.AssignmentCreateRequest;
+import io.labelstudio.sdk.vo.AssignmentUpdateRequest;
+import io.labelstudio.sdk.vo.BulkAssignmentRequest;
+import io.labelstudio.sdk.vo.BulkAssignmentResult;
+import io.labelstudio.sdk.vo.BulkUnassignmentRequest;
 
 import java.util.concurrent.CompletableFuture;
 

@@ -4,6 +4,8 @@ import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.core.RequestOptions;
 import io.labelstudio.sdk.models.Organization;
+import io.labelstudio.sdk.vo.OrganizationCreateRequest;
+import io.labelstudio.sdk.vo.OrganizationUpdateRequest;
 
 import java.util.concurrent.CompletableFuture;
 

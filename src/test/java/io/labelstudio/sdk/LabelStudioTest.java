@@ -1,6 +1,6 @@
 package io.labelstudio.sdk;
 
-import io.labelstudio.sdk.client.ProjectCreateRequest;
+import io.labelstudio.sdk.vo.ProjectCreateRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 

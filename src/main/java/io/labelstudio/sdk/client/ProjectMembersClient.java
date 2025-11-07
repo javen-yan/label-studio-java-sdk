@@ -4,6 +4,10 @@ import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.core.RequestOptions;
 import io.labelstudio.sdk.models.ProjectMember;
+import io.labelstudio.sdk.vo.BulkMemberRequest;
+import io.labelstudio.sdk.vo.BulkMemberResult;
+import io.labelstudio.sdk.vo.MemberCreateRequest;
+import io.labelstudio.sdk.vo.MemberUpdateRequest;
 
 import java.util.concurrent.CompletableFuture;
 

@@ -7,8 +7,6 @@ import io.labelstudio.sdk.core.TokenManager;
 import io.labelstudio.sdk.models.LoginResponse;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Main client for interacting with the Label Studio API.
@@ -34,7 +32,6 @@ import java.util.Map;
  */
 public class LabelStudio {
     
-    private static final String SDK_VERSION = "2.0.0";
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(60);
     
     private final HttpClient httpClient;
@@ -47,7 +44,6 @@ public class LabelStudio {
     private final ImportStorageClient importStorage;
     private final MlClient ml;
     private final WebhooksClient webhooks;
-    private final ViewsClient views;
     private final ActivityLogsClient activityLogs;
     private final AnnotationHistoryClient annotationHistory;
     private final AnnotationReviewsClient annotationReviews;
@@ -82,7 +78,6 @@ public class LabelStudio {
         this.importStorage = new ImportStorageClient(httpClient);
         this.ml = new MlClient(httpClient);
         this.webhooks = new WebhooksClient(httpClient);
-        this.views = new ViewsClient(httpClient);
         this.activityLogs = new ActivityLogsClient(httpClient);
         this.annotationHistory = new AnnotationHistoryClient(httpClient);
         this.annotationReviews = new AnnotationReviewsClient(httpClient);
@@ -169,15 +164,6 @@ public class LabelStudio {
      */
     public WebhooksClient webhooks() {
         return webhooks;
-    }
-    
-    /**
-     * Gets the views client for managing data views.
-     * 
-     * @return the views client
-     */
-    public ViewsClient views() {
-        return views;
     }
     
     /**
@@ -279,11 +265,6 @@ public class LabelStudio {
             throw new ApiError("Login failed: token is null or empty");
         }
         
-        // Log token info for debugging (masked)
-        String maskedToken = token.length() > 30 ? token.substring(0, 30) + "..." : token;
-        java.util.logging.Logger.getLogger(LabelStudio.class.getName())
-            .info("Login successful, token length: " + token.length() + ", starts with: " + maskedToken);
-        
         // Create and return authenticated client
         return new Builder()
                 .baseUrl(baseUrl)
@@ -323,22 +304,6 @@ public class LabelStudio {
         }
         
         return System.getenv("LABEL_STUDIO_API_KEY");
-    }
-    
-    private static Map<String, String> createDefaultHeaders(String apiKey) {
-        Map<String, String> headers = new HashMap<>();
-        // Only add Authorization header if apiKey is provided
-        if (apiKey != null && !apiKey.trim().isEmpty()) {
-            // Use Bearer prefix as per Label Studio API documentation
-            String authValue = "Bearer " + apiKey.trim();
-            headers.put("Authorization", authValue);
-        }
-        headers.put("Content-Type", "application/json");
-        headers.put("User-Agent", "label-studio-sdk-java/" + SDK_VERSION);
-        headers.put("X-SDK-Language", "Java");
-        headers.put("X-SDK-Name", "label-studio-sdk");
-        headers.put("X-SDK-Version", SDK_VERSION);
-        return headers;
     }
     
     /**

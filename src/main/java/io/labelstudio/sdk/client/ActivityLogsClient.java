@@ -3,6 +3,7 @@ package io.labelstudio.sdk.client;
 import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.models.ActivityLog;
+import io.labelstudio.sdk.vo.ActivityLogListOptions;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -50,7 +51,11 @@ public class ActivityLogsClient {
      * @return a paginated list of activity logs
      */
     public Pagination<ActivityLog> list(ActivityLogListOptions options) {
-        return httpClient.getPaginated("/api/activity-logs/" + options.toQueryString(), ActivityLog.class);
+        String path = "/api/activity-logs/";
+        if (options != null) {
+            path += buildQueryString(options);
+        }
+        return httpClient.getPaginated(path, ActivityLog.class);
     }
     
     /**
@@ -60,7 +65,81 @@ public class ActivityLogsClient {
      * @return a CompletableFuture containing a paginated list of activity logs
      */
     public CompletableFuture<Pagination<ActivityLog>> listAsync(ActivityLogListOptions options) {
-        return httpClient.getPaginatedAsync("/api/activity-logs/" + options.toQueryString(), ActivityLog.class);
+        String path = "/api/activity-logs/";
+        if (options != null) {
+            path += buildQueryString(options);
+        }
+        return httpClient.getPaginatedAsync(path, ActivityLog.class);
+    }
+    
+    /**
+     * Builds the query string for the activity logs list.
+     * 
+     * @param options the list options
+     * @return the query string
+     */
+    private String buildQueryString(ActivityLogListOptions options) {
+        if (options == null) {
+            return "";
+        }
+        
+        StringBuilder sb = new StringBuilder("?");
+        boolean hasParam = false;
+        
+        if (options.getProject() != null) {
+            sb.append("project=").append(options.getProject());
+            hasParam = true;
+        }
+        
+        if (options.getUser() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("user=").append(options.getUser());
+            hasParam = true;
+        }
+        
+        if (options.getAction() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("action=").append(options.getAction());
+            hasParam = true;
+        }
+        
+        if (options.getObjectType() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("object_type=").append(options.getObjectType());
+            hasParam = true;
+        }
+        
+        if (options.getObjectId() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("object_id=").append(options.getObjectId());
+            hasParam = true;
+        }
+        
+        if (options.getStartDate() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("start_date=").append(options.getStartDate());
+            hasParam = true;
+        }
+        
+        if (options.getEndDate() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("end_date=").append(options.getEndDate());
+            hasParam = true;
+        }
+        
+        if (options.getPage() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("page=").append(options.getPage());
+            hasParam = true;
+        }
+        
+        if (options.getPageSize() != null) {
+            if (hasParam) sb.append("&");
+            sb.append("page_size=").append(options.getPageSize());
+            hasParam = true;
+        }
+        
+        return hasParam ? sb.toString() : "";
     }
     
     /**

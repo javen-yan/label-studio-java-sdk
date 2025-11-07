@@ -1,12 +1,13 @@
 package io.labelstudio.sdk.examples;
 
 import io.labelstudio.sdk.LabelStudio;
-import io.labelstudio.sdk.client.AnnotationCreateRequest;
-import io.labelstudio.sdk.client.ExportCreateRequest;
-import io.labelstudio.sdk.client.LabelConfigValidationResult;
-import io.labelstudio.sdk.client.ProjectCreateRequest;
-import io.labelstudio.sdk.client.ProjectsListOptions;
-import io.labelstudio.sdk.client.TaskCreateRequest;
+import io.labelstudio.sdk.vo.AnnotationCreateRequest;
+import io.labelstudio.sdk.vo.ExportCreateRequest;
+import io.labelstudio.sdk.vo.LabelConfigValidationResult;
+import io.labelstudio.sdk.vo.ProjectCreateRequest;
+import io.labelstudio.sdk.vo.ProjectsListOptions;
+import io.labelstudio.sdk.vo.TaskCreateRequest;
+import io.labelstudio.sdk.vo.TasksListOptions;
 import io.labelstudio.sdk.core.ApiError;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.models.Annotation;
@@ -154,13 +155,14 @@ public class QuickStartExample {
                         .project(project.getId())
                         .build();
                 
-                Task task = client.tasks().create(project.getId(), taskRequest);
+                Task task = client.tasks().create(taskRequest);
                 logger.info("   Created task " + (i + 1) + ": " + task.getData().get("text"));
             }
             
             // 5. List tasks
             logger.info("5. Listing all tasks in the project...");
-            Pagination<Task> tasks = client.tasks().list(project.getId());
+            TasksListOptions tasksListOptions = TasksListOptions.builder().project(project.getId()).build();
+            Pagination<Task> tasks = client.tasks().list(tasksListOptions);
             logger.info("   Found " + tasks.getCount() + " tasks:");
             for (Task task : tasks.getResults()) {
                 logger.info("   - Task " + task.getId() + ": " + task.getData().get("text"));
@@ -171,7 +173,7 @@ public class QuickStartExample {
             logger.info("5.1 Demonstrating advanced project listing...");
             Pagination<Project> filteredProjects = client.projects().list(
                 ProjectsListOptions.builder()
-                    .orderByCreatedAtDesc()
+                    .ordering("created_at:desc")
                     .pageSize(5)
                     .include("title,task_number,finished_task_number")  // Include title to ensure it's returned
                     .build()
@@ -214,7 +216,7 @@ public class QuickStartExample {
             Export export = client.projects().exports(project.getId()).create(
                 ExportCreateRequest.builder()
                     .title("SDK Example Export")
-                    .json()
+                    .exportType("json")
                     .downloadAllTasks(true)
                     .build()
             );
@@ -277,7 +279,7 @@ public class QuickStartExample {
                 }
                 
                 // Delete tasks
-                Pagination<Task> tasksToDelete = client.tasks().list(project.getId());
+                Pagination<Task> tasksToDelete = client.tasks().list(TasksListOptions.builder().project(project.getId()).build());
                 for (Task task : tasksToDelete.getResults()) {
                     try {
                         client.tasks().delete(task.getId());

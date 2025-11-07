@@ -57,6 +57,14 @@ public class TokenManager {
             logger.debug("Using legacy token (non-JWT)");
         }
     }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public Date getAccessTokenExpiration() {
+        return accessTokenExpiration;
+    }
     
     /**
      * Gets the current access token, refreshing if necessary.

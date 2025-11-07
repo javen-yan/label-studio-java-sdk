@@ -4,6 +4,15 @@ import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.core.RequestOptions;
 import io.labelstudio.sdk.models.Project;
+import io.labelstudio.sdk.vo.LabelConfigValidationResult;
+import io.labelstudio.sdk.vo.PredictionImportRequest;
+import io.labelstudio.sdk.vo.PredictionImportResult;
+import io.labelstudio.sdk.vo.ProjectCounts;
+import io.labelstudio.sdk.vo.ProjectCreateRequest;
+import io.labelstudio.sdk.vo.ProjectDuplicateRequest;
+import io.labelstudio.sdk.vo.ProjectsListOptions;
+import io.labelstudio.sdk.vo.ProjectUpdateRequest;
+import io.labelstudio.sdk.vo.TaskImportResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -423,6 +432,29 @@ public class ProjectsClient {
     public CompletableFuture<TaskImportResult> importTasksAsync(int id, List<Map<String, Object>> tasks, RequestOptions options) {
         return httpClient.postAsync("/api/projects/" + id + "/import/", tasks, TaskImportResult.class);
     }
+
+        /**
+     * Imports tasks into a project with options.
+     * 
+     * @param id the project ID
+     * @param tasks the tasks to import
+     * @param options request options
+     * @return import result
+     */
+    public void deleteTasks(int id) {
+        httpClient.delete("/api/projects/" + id + "/tasks/", Void.class);
+    }
+    
+    /**
+     * Imports tasks into a project asynchronously.
+     * 
+     * @param id the project ID
+     * @param tasks the tasks to import
+     * @return a CompletableFuture containing the import result
+     */
+    public CompletableFuture<Void> deleteTasksAsync(int id) {
+        return httpClient.deleteAsync("/api/projects/" + id + "/tasks/", Void.class);
+    }
     
     /**
      * Gets project counts with filtering options.
@@ -553,6 +585,52 @@ public class ProjectsClient {
     }
     
     /**
+     * Lists unique annotators for a project.
+     * 
+     * @param id the project ID
+     * @return a list of unique annotators
+     */
+    public List<io.labelstudio.sdk.models.UserSimple> listUniqueAnnotators(int id) {
+        return listUniqueAnnotators(id, null);
+    }
+    
+    /**
+     * Lists unique annotators for a project with options.
+     * 
+     * @param id the project ID
+     * @param options request options
+     * @return a list of unique annotators
+     */
+    public List<io.labelstudio.sdk.models.UserSimple> listUniqueAnnotators(int id, RequestOptions options) {
+        return httpClient.get("/api/projects/" + id + "/unique-annotators/", 
+                httpClient.getObjectMapper().getTypeFactory()
+                        .constructCollectionType(List.class, io.labelstudio.sdk.models.UserSimple.class));
+    }
+    
+    /**
+     * Lists unique annotators for a project asynchronously.
+     * 
+     * @param id the project ID
+     * @return a CompletableFuture containing a list of unique annotators
+     */
+    public CompletableFuture<List<io.labelstudio.sdk.models.UserSimple>> listUniqueAnnotatorsAsync(int id) {
+        return listUniqueAnnotatorsAsync(id, null);
+    }
+    
+    /**
+     * Lists unique annotators for a project with options asynchronously.
+     * 
+     * @param id the project ID
+     * @param options request options
+     * @return a CompletableFuture containing a list of unique annotators
+     */
+    public CompletableFuture<List<io.labelstudio.sdk.models.UserSimple>> listUniqueAnnotatorsAsync(int id, RequestOptions options) {
+        return httpClient.getAsync("/api/projects/" + id + "/unique-annotators/", 
+                httpClient.getObjectMapper().getTypeFactory()
+                        .constructCollectionType(List.class, io.labelstudio.sdk.models.UserSimple.class));
+    }
+    
+    /**
      * Builds query string from list options.
      * 
      * @param options the list options
@@ -617,4 +695,7 @@ public class ProjectsClient {
         
         return hasParam ? sb.toString() : "";
     }
+
+
+
 }

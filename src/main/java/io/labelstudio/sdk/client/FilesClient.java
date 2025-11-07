@@ -3,9 +3,11 @@ package io.labelstudio.sdk.client;
 import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.models.FileUpload;
+import io.labelstudio.sdk.vo.FileUploadOptions;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -213,5 +215,46 @@ public class FilesClient {
      */
     public CompletableFuture<FileUpload> getMetadataAsync(int fileId) {
         return httpClient.getAsync("/api/files/" + fileId + "/metadata/", FileUpload.class);
+    }
+    
+    /**
+     * Updates a file upload.
+     * 
+     * @param fileId the file ID
+     * @param options update options
+     * @return the updated file upload record
+     */
+    public FileUpload update(int fileId, FileUploadOptions options) {
+        return httpClient.put("/api/files/" + fileId + "/", options, FileUpload.class);
+    }
+    
+    /**
+     * Updates a file upload asynchronously.
+     * 
+     * @param fileId the file ID
+     * @param options update options
+     * @return a CompletableFuture containing the updated file upload record
+     */
+    public CompletableFuture<FileUpload> updateAsync(int fileId, FileUploadOptions options) {
+        return httpClient.putAsync("/api/files/" + fileId + "/", options, FileUpload.class);
+    }
+    
+    /**
+     * Deletes multiple files.
+     * 
+     * @param fileIds the list of file IDs to delete
+     */
+    public void deleteMany(List<Integer> fileIds) {
+        httpClient.post("/api/files/delete-many/", fileIds, Void.class);
+    }
+    
+    /**
+     * Deletes multiple files asynchronously.
+     * 
+     * @param fileIds the list of file IDs to delete
+     * @return a CompletableFuture that completes when the files are deleted
+     */
+    public CompletableFuture<Void> deleteManyAsync(List<Integer> fileIds) {
+        return httpClient.postAsync("/api/files/delete-many/", fileIds, Void.class);
     }
 }

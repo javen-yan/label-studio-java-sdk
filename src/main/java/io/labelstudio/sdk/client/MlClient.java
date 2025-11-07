@@ -4,7 +4,10 @@ import io.labelstudio.sdk.core.HttpClient;
 import io.labelstudio.sdk.core.Pagination;
 import io.labelstudio.sdk.core.RequestOptions;
 import io.labelstudio.sdk.models.MlBackend;
+import io.labelstudio.sdk.vo.MlBackendCreateRequest;
+import io.labelstudio.sdk.vo.MlBackendUpdateRequest;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -381,5 +384,143 @@ public class MlClient {
      */
     public CompletableFuture<MlBackend> predictAsync(int backendId, int taskId, RequestOptions requestOptions) {
         return httpClient.postAsync("/api/ml/" + backendId + "/predict/?task=" + taskId, null, MlBackend.class);
+    }
+    
+    /**
+     * Requests interactive annotation from an ML backend.
+     * 
+     * @param backendId the backend ID
+     * @param taskId the task ID
+     * @return the prediction result
+     */
+    public Object predictInteractive(int backendId, int taskId) {
+        return predictInteractive(backendId, taskId, null);
+    }
+    
+    /**
+     * Requests interactive annotation from an ML backend with options.
+     * 
+     * @param backendId the backend ID
+     * @param taskId the task ID
+     * @param requestOptions request options
+     * @return the prediction result
+     */
+    public Object predictInteractive(int backendId, int taskId, RequestOptions requestOptions) {
+        return httpClient.post("/api/ml/" + backendId + "/predict-interactive/?task=" + taskId, null, Object.class);
+    }
+    
+    /**
+     * Requests interactive annotation from an ML backend asynchronously.
+     * 
+     * @param backendId the backend ID
+     * @param taskId the task ID
+     * @return a CompletableFuture containing the prediction result
+     */
+    public CompletableFuture<Object> predictInteractiveAsync(int backendId, int taskId) {
+        return predictInteractiveAsync(backendId, taskId, null);
+    }
+    
+    /**
+     * Requests interactive annotation from an ML backend with options asynchronously.
+     * 
+     * @param backendId the backend ID
+     * @param taskId the task ID
+     * @param requestOptions request options
+     * @return a CompletableFuture containing the prediction result
+     */
+    public CompletableFuture<Object> predictInteractiveAsync(int backendId, int taskId, RequestOptions requestOptions) {
+        return httpClient.postAsync("/api/ml/" + backendId + "/predict-interactive/?task=" + taskId, null, Object.class);
+    }
+    
+    /**
+     * Creates predictions for all tasks in a project.
+     * 
+     * @param backendId the backend ID
+     * @param projectId the project ID
+     * @return the result
+     */
+    public Object predictAllTasks(int backendId, int projectId) {
+        return predictAllTasks(backendId, projectId, null);
+    }
+    
+    /**
+     * Creates predictions for all tasks in a project with options.
+     * 
+     * @param backendId the backend ID
+     * @param projectId the project ID
+     * @param requestOptions request options
+     * @return the result
+     */
+    public Object predictAllTasks(int backendId, int projectId, RequestOptions requestOptions) {
+        return httpClient.post("/api/ml/" + backendId + "/predict-all-tasks/?project=" + projectId, null, Object.class);
+    }
+    
+    /**
+     * Creates predictions for all tasks in a project asynchronously.
+     * 
+     * @param backendId the backend ID
+     * @param projectId the project ID
+     * @return a CompletableFuture containing the result
+     */
+    public CompletableFuture<Object> predictAllTasksAsync(int backendId, int projectId) {
+        return predictAllTasksAsync(backendId, projectId, null);
+    }
+    
+    /**
+     * Creates predictions for all tasks in a project with options asynchronously.
+     * 
+     * @param backendId the backend ID
+     * @param projectId the project ID
+     * @param requestOptions request options
+     * @return a CompletableFuture containing the result
+     */
+    public CompletableFuture<Object> predictAllTasksAsync(int backendId, int projectId, RequestOptions requestOptions) {
+        return httpClient.postAsync("/api/ml/" + backendId + "/predict-all-tasks/?project=" + projectId, null, Object.class);
+    }
+    
+    /**
+     * Lists model versions for an ML backend.
+     * 
+     * @param backendId the backend ID
+     * @return a list of model versions
+     */
+    public List<Object> listModelVersions(int backendId) {
+        return listModelVersions(backendId, null);
+    }
+    
+    /**
+     * Lists model versions for an ML backend with options.
+     * 
+     * @param backendId the backend ID
+     * @param requestOptions request options
+     * @return a list of model versions
+     */
+    public List<Object> listModelVersions(int backendId, RequestOptions requestOptions) {
+        return httpClient.get("/api/ml/" + backendId + "/model-versions/", 
+                httpClient.getObjectMapper().getTypeFactory()
+                        .constructCollectionType(List.class, Object.class));
+    }
+    
+    /**
+     * Lists model versions for an ML backend asynchronously.
+     * 
+     * @param backendId the backend ID
+     * @return a CompletableFuture containing a list of model versions
+     */
+    public CompletableFuture<List<Object>> listModelVersionsAsync(int backendId) {
+        return listModelVersionsAsync(backendId, null);
+    }
+    
+    /**
+     * Lists model versions for an ML backend with options asynchronously.
+     * 
+     * @param backendId the backend ID
+     * @param requestOptions request options
+     * @return a CompletableFuture containing a list of model versions
+     */
+    public CompletableFuture<List<Object>> listModelVersionsAsync(int backendId, RequestOptions requestOptions) {
+        return httpClient.getAsync("/api/ml/" + backendId + "/model-versions/", 
+                httpClient.getObjectMapper().getTypeFactory()
+                        .constructCollectionType(List.class, Object.class));
     }
 }
